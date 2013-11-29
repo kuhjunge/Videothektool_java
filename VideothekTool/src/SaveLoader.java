@@ -71,7 +71,7 @@ public class SaveLoader {
 			rootEle.appendChild(e);
 
 			e = dom.createElement("url");
-			e.appendChild(dom.createTextNode(url));
+			e.appendChild(dom.createTextNode(url.replace("jdbc:mysql://", "")));
 			rootEle.appendChild(e);
 
 			e = dom.createElement("dbName");
@@ -147,17 +147,17 @@ public class SaveLoader {
 					rolev.add(username);
 			}
 
-			password = getTextValue(password, doc, "role2");
+			password = getTextValue(password, doc, "password");
 			if (password != null) {
 				if (!password.isEmpty())
 					rolev.add(password);
 			}
-			url = getTextValue(url, doc, "role3");
+			url = "jdbc:mysql://" + getTextValue(url, doc, "url");
 			if (url != null) {
 				if (!url.isEmpty())
 					rolev.add(url);
 			}
-			dbName = getTextValue(dbName, doc, "role4");
+			dbName = getTextValue(dbName, doc, "dbName");
 			if (dbName != null) {
 				if (!dbName.isEmpty())
 					rolev.add(dbName);
