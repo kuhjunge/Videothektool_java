@@ -31,7 +31,7 @@ public class Film {
 	@DatabaseField
 	private Date neu_Bis;
 	@DatabaseField
-	private String genre_ref;
+	private Integer genre_ref;
 
 	/**
 	 * default Konstruktor
@@ -46,7 +46,7 @@ public class Film {
 	 */
 	public Film(int idFilm, String titel, int jahr, int laufzeit,
 			double imdbWertung, String plot, int fsk, double grundpreis,
-			double neuheitenZuschlag, String genre_ref) {
+			double neuheitenZuschlag, Integer genre_ref) {
 		super();
 		if (idFilm > 0)
 			this.idFilm = idFilm;
@@ -62,6 +62,8 @@ public class Film {
 		this.genre_ref = genre_ref;
 	}
 
+	
+	
 	public String getTitel() {
 		return this.titel;
 	}
@@ -71,6 +73,13 @@ public class Film {
 	 */
 	public int getID() {
 		return this.idFilm;
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public int getGenre() {
+		return this.genre_ref;
 	}
 
 	/**

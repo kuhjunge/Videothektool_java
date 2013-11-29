@@ -1,6 +1,8 @@
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.j256.ormlite.dao.*;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -24,6 +26,7 @@ public class FilmDB {
 	 * Dao von ORMLite
 	 */
 	private Dao<Film, String> filmDao;
+	private Dao<Genre, String> genreDao;
 
 	/**
 	 * Default- Konstruktor
@@ -64,6 +67,8 @@ public class FilmDB {
 			// instantiate the dao
 			this.filmDao = DaoManager.createDao(this.connectionSource,
 					Film.class);
+			this.genreDao = DaoManager.createDao(this.connectionSource,
+					Genre.class);
 
 		} catch (Exception e) {
 			System.out.println(e.toString());
@@ -80,6 +85,26 @@ public class FilmDB {
 			return this.filmDao.queryForAll();
 		} catch (Exception e) {
 			System.out.println(e.toString() + " Fehler beim laden der Filme");
+			return null;
+		}
+	}
+	
+	/**
+	 * Gibt eine List<Genre> zurück. Es wird im FilmDao.queryForAll() aufgerufen
+	 * 
+	 * @return
+	 */
+	public Map<Integer,String> getGenre() {
+		try {
+			Map<Integer,String> m = new HashMap<Integer,String>();
+			List<Genre> l =  this.genreDao.queryForAll();
+			for(Genre g : l)
+			{
+				m.put(g.getID(), g.getGenre());
+			}
+			return m;
+		} catch (Exception e) {
+			System.out.println(e.toString() + " Fehler beim laden der Genre");
 			return null;
 		}
 	}
