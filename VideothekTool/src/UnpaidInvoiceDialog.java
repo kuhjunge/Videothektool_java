@@ -12,7 +12,10 @@ import javax.swing.JTextArea;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-
+/**
+ * @author Rene Kremer
+ *  @version 1
+ */
 public class UnpaidInvoiceDialog extends JDialog {
 
 	/**

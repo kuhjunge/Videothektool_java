@@ -19,12 +19,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * 
- */
-
-/**
  * @author Chris Deter
- * 
+ *  @version 1.1
  */
 public class SaveLoader {
 

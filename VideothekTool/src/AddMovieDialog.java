@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -76,6 +77,7 @@ public class AddMovieDialog extends JDialog {
 
 			btnFilmHinzufgen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					try {
 					f = new Film(filmID, textFieldTitle.getText(), Integer
 							.parseInt(textFieldYear.getText()), Integer
 							.parseInt(textFieldPlaytime.getText()), Double
@@ -87,6 +89,11 @@ public class AddMovieDialog extends JDialog {
 							Integer.parseInt(textFieldGenre.getText()) + "");
 					FilmDB db = new FilmDB();
 					db.writeMovie(f);
+					}
+					catch (Exception fehler)
+					{
+						System.out.println("Fehler beim Eingabeformat!");
+					}
 				}
 			});
 			btnFilmHinzufgen.setBounds(220, 194, 107, 23);

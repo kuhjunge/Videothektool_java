@@ -34,7 +34,7 @@ public class Film {
 	private String genre_ref;
 
 	/**
-	 * defaultKonstruktor
+	 * default Konstruktor
 	 */
 	public Film() {
 

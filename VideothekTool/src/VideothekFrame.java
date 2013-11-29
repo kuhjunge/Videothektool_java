@@ -31,7 +31,7 @@ import java.awt.event.WindowEvent;
 
 /**
  * @author Simon Krause
- * 
+ *  @version 1.1
  */
 public class VideothekFrame extends JFrame {
 

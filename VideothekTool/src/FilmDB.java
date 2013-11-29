@@ -10,7 +10,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 /**
  * @author Kuhjunge, Simon Krause, Rene Kremer
- * @version 1.0.5
+ * @version 1.0.4
  * 
  */
 public class FilmDB {
