@@ -41,7 +41,7 @@ public class AddMovieDialog extends JDialog {
 	Map<Integer,String> genre = db.getGenre();
 
 	/**
-	 * Setzt eine Filmauswahl in das Fenster
+	 * Setzt eine Filmauswahl in das Fenster!
 	 * 
 	 * @param film
 	 *            Das Filmobjekt des ausgewählten Filmes
@@ -63,6 +63,21 @@ public class AddMovieDialog extends JDialog {
 		}
 	}
 
+	public void clear() {
+			this.f = null;
+			textFieldTitle.setText("");
+			textFieldYear.setText( "");
+			textFieldPlaytime.setText("");
+			textFieldIMDB.setText("");
+			txtrStory.setText("");
+			textFieldFSK.setText("");
+			textFieldBasicCost.setText("0");
+			textFieldNewCost.setText("0");
+			this.comboBoxGenre.setSelectedItem("1");
+			filmID = 0;
+			this.btnFilmHinzufgen.setText("Film hinzuf\u00FCgen"); 
+	}
+	
 	/**
 	 * Create the dialog.
 	 * 

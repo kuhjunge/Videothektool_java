@@ -114,6 +114,7 @@ public class VideothekFrame extends JFrame {
 			 * kann
 			 */
 			public void actionPerformed(ActionEvent arg0) {
+				addMovieDialog.clear();
 				addMovieDialog.setVisible(true);
 			}
 		});
