@@ -37,8 +37,8 @@ public class AddMovieDialog extends JDialog {
 	private Film f = null;
 	private JButton btnFilmHinzufgen = new JButton("Film hinzuf\u00FCgen");
 	private int filmID = 0;
-	private FilmDB db = new FilmDB();
-	Map<Integer,String> genre = db.getGenre();
+	private FilmDB db ;//= new FilmDB();
+	Map<Integer,String> genre ;
 
 	/**
 	 * Setzt eine Filmauswahl in das Fenster!
@@ -63,6 +63,9 @@ public class AddMovieDialog extends JDialog {
 		}
 	}
 
+	/**
+	 * leert das Filmmanager Fenster!
+	 */
 	public void clear() {
 			this.f = null;
 			textFieldTitle.setText("");
@@ -83,9 +86,10 @@ public class AddMovieDialog extends JDialog {
 	 * 
 	 * @param videothekFrame
 	 */
-	public AddMovieDialog(JFrame frame) {
-		super(frame);
+	public AddMovieDialog(JFrame frame, FilmDB dbi) {
 		setTitle("Filmmanager");
+		db = dbi;
+		genre = db.getGenre();
 		setBounds(100, 100, 450, 259);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

@@ -20,15 +20,83 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Chris Deter
- *  @version 1.1
+ * @version 1.1
  */
 public class SaveLoader {
 
-	public String username = "";
-	public String password = "";
-	public String url = "";
-	public String dbName = "";
-	public String savepath = defaultDirectory() + File.separator + "dbcon.xml";
+	private String username = "";
+	private String password = "";
+	private String url = "";
+	private String dbName = "";
+	private String savepath = defaultDirectory() + File.separator + "dbcon.xml";
+	private boolean saveuser = false;
+
+	/**
+	 * @return the username
+	 */
+	public String getSavepath() {
+		return savepath;
+	}
+
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * @param username
+	 *            the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param password
+	 *            the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the dbName
+	 */
+	public String getDbName() {
+		return dbName;
+	}
+
+	/**
+	 * @param dbName
+	 *            the dbName to set
+	 */
+	public void setDbName(String dbName) {
+		this.dbName = dbName;
+	}
 
 	private static String defaultDirectory() {
 		String OS = System.getProperty("os.name").toUpperCase();
@@ -46,7 +114,7 @@ public class SaveLoader {
 	 * Speichert eine XML Datei mit Filminformationen in den entsprechenden
 	 * Ordner
 	 */
-	private void saveToXML() {
+	public void saveToXML() {
 		Document dom;
 		Element e = null;
 
@@ -63,11 +131,11 @@ public class SaveLoader {
 
 			// create data elements and place them under root
 			e = dom.createElement("username");
-			e.appendChild(dom.createTextNode(username));
+			e.appendChild(dom.createTextNode(saveuser ? username : ""));
 			rootEle.appendChild(e);
 
 			e = dom.createElement("password");
-			e.appendChild(dom.createTextNode(password));
+			e.appendChild(dom.createTextNode(saveuser ? password : ""));
 			rootEle.appendChild(e);
 
 			e = dom.createElement("url");
@@ -110,13 +178,6 @@ public class SaveLoader {
 		File d = new File(savepath);
 		if (d.exists()) {
 			readXML();
-		} else {
-			username = JOptionPane.showInputDialog("Datenbank Benutzername:");
-			password = JOptionPane.showInputDialog("Datenbank Passwort:");
-			url = "jdbc:mysql://"
-					+ JOptionPane.showInputDialog("Datenbank URL (ohne //):");
-			dbName = JOptionPane.showInputDialog("Datenbank Name:");
-			saveToXML();
 		}
 	}
 
@@ -162,6 +223,7 @@ public class SaveLoader {
 				if (!dbName.isEmpty())
 					rolev.add(dbName);
 			}
+			if (username != "" && password != "")  saveuser = true; // Nutzerdaten werden standardm‰ﬂig gespeichert
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -182,6 +244,21 @@ public class SaveLoader {
 			value = nl.item(0).getFirstChild().getNodeValue();
 		}
 		return value;
+	}
+
+	/**
+	 * @return the saveuser
+	 */
+	public boolean isSaveuser() {
+		return saveuser;
+	}
+
+	/**
+	 * @param saveuser
+	 *            the saveuser to set
+	 */
+	public void setSaveuser(boolean saveuser) {
+		this.saveuser = saveuser;
 	}
 
 }

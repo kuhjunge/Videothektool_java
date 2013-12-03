@@ -34,10 +34,10 @@ public class FilmDB {
 	public FilmDB() {
 		SaveLoader s = new SaveLoader();
 		s.read();
-		username = s.username;
-		password = s.password;
-		url = s.url;
-		dbName = s.dbName;
+		username = s.getUsername();
+		password = s.getPassword();
+		url = s.getUrl();
+		dbName = s.getDbName();
 		this.connect();
 	}
 

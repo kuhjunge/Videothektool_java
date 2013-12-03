@@ -28,6 +28,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JMenuItem;
 
 /**
  * @author Simon Krause
@@ -50,7 +51,6 @@ public class VideothekFrame extends JFrame {
 	private JButton btnNewButton_1;
 	private Component horizontalGlue_1;
 	private JButton btnNewButton_2;
-	private Component horizontalGlue;
 	private JScrollPane scrollPane;
 	private JTable table;
 	private UnpaidInvoiceDialog unpaidInvoiceDialog;
@@ -63,7 +63,7 @@ public class VideothekFrame extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void openVideothek(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -89,11 +89,10 @@ public class VideothekFrame extends JFrame {
 				db.close();
 			}
 		});
-
 		this.db = new FilmDB();
 		this.unpaidInvoiceDialog = new UnpaidInvoiceDialog(this,
 				"Offene Rechnungen", true);
-		this.addMovieDialog = new AddMovieDialog(this);
+		this.addMovieDialog = new AddMovieDialog(this, db);
 
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -133,9 +132,6 @@ public class VideothekFrame extends JFrame {
 		});
 		btnNewButton_1.setToolTipText("Offene Rechnungen anzeigen");
 		panel.add(btnNewButton_1);
-
-		horizontalGlue = Box.createHorizontalGlue();
-		panel.add(horizontalGlue);
 
 		btnNewButton_2 = new JButton("Beenden");
 		btnNewButton_2.setToolTipText("Anwendung beenden");
