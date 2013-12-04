@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dbcon>
+    <username>Mo2c</username>
+    <password>mo2c2013</password>
+    <url>slo.swe.fh-luebeck.de:3306</url>
+    <dbName>Mo2c</dbName>
+</dbcon>
