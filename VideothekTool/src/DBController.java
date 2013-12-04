@@ -12,33 +12,56 @@ import com.j256.ormlite.support.ConnectionSource;
 
 /**
  * @author Kuhjunge, Simon Krause, Rene Kremer
- * @version 1.0.4
+ * @version 1.0.5
  * 
  */
-public class FilmDB {
-	private String username = "";
-	private String password = "";
-	// private String driver = "com.mysql.jdbc.Driver";
-	private String url = "";
-	private ConnectionSource connectionSource = null;
-	private String dbName = "";
+public class DBController {
 	/**
-	 * Dao von ORMLite
+	 * User, der sich in der DB anmeldet
+	 */
+	private String username = "";
+	
+	/**
+	 * Passwort des Users
+	 */
+	private String password = "";	
+	
+	/**
+	 * URL der Datenbank-Verbindung
+	 */
+	private String url = "";
+	
+	/**
+	 * ConnectionSource von ORMLite
+	 */
+	private ConnectionSource connectionSource = null;
+	
+	/**
+	 * Name des DB-Schemas
+	 */
+	private String dbName = "";
+	
+	/**
+	 * Dao für Film-Entität der DB
 	 */
 	private Dao<Film, String> filmDao;
+	
+	/**
+	 * Dao für Genre-Entität der DB
+	 */
 	private Dao<Genre, String> genreDao;
 
 	/**
 	 * Default- Konstruktor
+	 * Es wird keine Verbindung zur Datenbank aufgebaut.
 	 */
-	public FilmDB() {
+	public DBController() {
 		SaveLoader s = new SaveLoader();
 		s.read();
 		username = s.getUsername();
 		password = s.getPassword();
 		url = s.getUrl();
-		dbName = s.getDbName();
-		this.connect();
+		dbName = s.getDbName();		
 	}
 
 	/**

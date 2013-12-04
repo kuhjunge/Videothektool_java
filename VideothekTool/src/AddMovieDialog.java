@@ -37,7 +37,7 @@ public class AddMovieDialog extends JDialog {
 	private Film f = null;
 	private JButton btnFilmHinzufgen = new JButton("Film hinzuf\u00FCgen");
 	private int filmID = 0;
-	private FilmDB db ;//= new FilmDB();
+	private DBController db ;//= new FilmDB();
 	Map<Integer,String> genre ;
 
 	/**
@@ -86,7 +86,7 @@ public class AddMovieDialog extends JDialog {
 	 * 
 	 * @param videothekFrame
 	 */
-	public AddMovieDialog(JFrame frame, FilmDB dbi) {
+	public AddMovieDialog(JFrame frame, DBController dbi) {
 		setTitle("Filmmanager");
 		db = dbi;
 		genre = db.getGenre();

@@ -28,7 +28,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JMenuItem;
 
 /**
  * @author Simon Krause
@@ -58,7 +57,7 @@ public class VideothekFrame extends JFrame {
 	/**
 	 * Die FilmDatenbank
 	 */
-	private FilmDB db;
+	private DBController db;
 
 	/**
 	 * Launch the application.
@@ -89,7 +88,7 @@ public class VideothekFrame extends JFrame {
 				db.close();
 			}
 		});
-		this.db = new FilmDB();
+		this.db = new DBController();
 		this.unpaidInvoiceDialog = new UnpaidInvoiceDialog(this,
 				"Offene Rechnungen", true);
 		this.addMovieDialog = new AddMovieDialog(this, db);
@@ -209,9 +208,7 @@ public class VideothekFrame extends JFrame {
 					table.setValueAt(db.getAnzahlDVD(filme.get(i).getTitel()),
 							i, 1);
 					table.setValueAt(
-							db.getAnzahlBluRay(filme.get(i).getTitel()), i, 2);
-					// System.out.println(db.getAnzahlBluRay("sa' or select * from Kunde "));//TODO
-					// Test auf SQL-Injection
+							db.getAnzahlBluRay(filme.get(i).getTitel()), i, 2);				
 				}
 
 			}
