@@ -2,6 +2,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
+ * Diese Klasse repräsentiert die Entität Kunde der DB
  * @author Simon Krause
  * @version 1.0
  *
