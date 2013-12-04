@@ -67,7 +67,7 @@ public class VideothekFrame extends JFrame {
 			public void run() {
 				try {
 					VideothekFrame frame = new VideothekFrame();
-					frame.setVisible(true);
+					frame.setVisible(true);					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -89,6 +89,7 @@ public class VideothekFrame extends JFrame {
 			}
 		});
 		this.db = new DBController();
+		db.connect();
 		this.unpaidInvoiceDialog = new UnpaidInvoiceDialog(this,
 				"Offene Rechnungen", true);
 		this.addMovieDialog = new AddMovieDialog(this, db);
