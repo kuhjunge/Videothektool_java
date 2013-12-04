@@ -28,7 +28,11 @@ public class SaveLoader {
 	private String password = "";
 	private String url = "";
 	private String dbName = "";
-	private String savepath = defaultDirectory() + File.separator + "dbcon.xml";
+	/**
+	 * SavePath für die Login-Daten
+	 * Im Verzeichnis der Anwendung
+	 */
+	private String savepath = /*defaultDirectory() + File.separator +*/ "dbcon.xml";
 	private boolean saveuser = false;
 
 	/**
