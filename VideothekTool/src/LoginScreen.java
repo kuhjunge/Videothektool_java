@@ -111,6 +111,7 @@ public class LoginScreen extends JFrame {
 				SaveLoader.setUrl(textFieldDB.getText());
 				SaveLoader.setUsername(textFieldNutzername.getText());
 				SaveLoader.setSaveuser(chckbxLogindatenSpeichern.isSelected());
+				SaveLoader.saveToXML();
 
 				// Test Datenbank
 				try{
@@ -132,7 +133,7 @@ public class LoginScreen extends JFrame {
 		SaveLoader.read();
 		textFieldNutzername.setText(SaveLoader.getUsername());
 		textFieldPasswort.setText(SaveLoader.getPassword());
-		textFieldDB.setText(SaveLoader.getUrl());
+		textFieldDB.setText(SaveLoader.getcleanUrl());
 		textFieldDatenbankname.setText(SaveLoader.getDbName());
 		chckbxLogindatenSpeichern.setSelected(SaveLoader.isSaveuser());
 	}

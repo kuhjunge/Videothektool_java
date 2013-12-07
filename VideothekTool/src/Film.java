@@ -11,27 +11,27 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "Film")
 public class Film {
 	@DatabaseField(id = true)
-	private int idFilm;
+	protected int idFilm;
 	@DatabaseField
-	private String titel;
+	protected String titel;
 	@DatabaseField
-	private int jahr;
+	protected int jahr;
 	@DatabaseField
-	private int laufzeit;
+	protected int laufzeit;
 	@DatabaseField
-	private double imdb_Wertung;
+	protected double imdb_Wertung;
 	@DatabaseField
-	private String plot;
+	protected String plot;
 	@DatabaseField
-	private int fsk;
+	protected int fsk;
 	@DatabaseField
-	private double grundpreis;
+	protected double grundpreis;
 	@DatabaseField
-	private double neuheiten_Zuschlag;
+	protected double neuheiten_Zuschlag;
 	@DatabaseField
-	private Date neu_Bis;
+	protected Date neu_Bis;
 	@DatabaseField
-	private Integer genre_ref;
+	protected Integer genre_ref;
 
 	/**
 	 * default Konstruktor

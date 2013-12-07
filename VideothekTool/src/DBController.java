@@ -56,7 +56,6 @@ public class DBController {
 	 * Es wird keine Verbindung zur Datenbank aufgebaut.
 	 */
 	public DBController() {
-		SaveLoader.read();
 		username = SaveLoader.getUsername();
 		password = SaveLoader.getPassword();
 		url = SaveLoader.getUrl();
@@ -91,6 +90,8 @@ public class DBController {
 			this.genreDao = DaoManager.createDao(this.connectionSource,
 					Genre.class);
 			this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter Verbindung
+			
+			//this.filmDao.isUpdatable();
 	}
 	
 	public boolean isDBOnline()

@@ -76,13 +76,20 @@ public class SaveLoader {
 	public static String getUrl() {
 		return url;
 	}
+	
+	/**
+	 * @return the url
+	 */
+	public static String getcleanUrl() {
+		return url.replace("jdbc:mysql://", "");
+	}
 
 	/**
 	 * @param url
 	 *            the url to set
 	 */
 	public static void setUrl(String urli) {
-		url = urli;
+		url = "jdbc:mysql://" + urli.replace("jdbc:mysql://", "");
 	}
 
 	/**
