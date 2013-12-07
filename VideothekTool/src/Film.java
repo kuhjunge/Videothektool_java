@@ -4,6 +4,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * Diese Klasse repräsentiert die Entität Film der DB
+ * 
  * @author Simon Krause, Chris Deter
  * @version 1.1
  * 
@@ -62,8 +63,6 @@ public class Film {
 		this.genre_ref = genre_ref;
 	}
 
-	
-	
 	public String getTitel() {
 		return this.titel;
 	}
@@ -74,7 +73,7 @@ public class Film {
 	public int getID() {
 		return this.idFilm;
 	}
-	
+
 	/**
 	 * @return the id
 	 */

@@ -114,17 +114,19 @@ public class LoginScreen extends JFrame {
 				SaveLoader.saveToXML();
 
 				// Test Datenbank
-				try{
+				try {
 					DBController db;
 					db = new DBController();
 					db.connect();
 					SaveLoader.saveToXML();
 					dispose();
-				}
-				catch (SQLException e)
-				{
-					JOptionPane.showMessageDialog(null, "Fehler beim Verbinden mit der Datenbank!\r\n(" + e.toString()+")","Fehler",  JOptionPane.OK_OPTION);
-					
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(
+							null,
+							"Fehler beim Verbinden mit der Datenbank!\r\n("
+									+ e.toString() + ")", "Fehler",
+							JOptionPane.OK_OPTION);
+
 				}
 			}
 		});

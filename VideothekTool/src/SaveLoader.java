@@ -30,7 +30,8 @@ public class SaveLoader {
 	/**
 	 * SavePath für die Login-Daten Im Verzeichnis der Anwendung
 	 */
-	private static String savepath =  defaultDirectory() + File.separator + "dbcon.xml";
+	private static String savepath = defaultDirectory() + File.separator
+			+ "dbcon.xml";
 	private static boolean saveuser = false;
 
 	/**
@@ -39,7 +40,7 @@ public class SaveLoader {
 	public static String getSavepath() {
 		return savepath;
 	}
-	
+
 	/**
 	 * @return the username
 	 */
@@ -76,7 +77,7 @@ public class SaveLoader {
 	public static String getUrl() {
 		return url;
 	}
-	
+
 	/**
 	 * @return the url
 	 */

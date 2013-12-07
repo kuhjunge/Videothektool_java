@@ -17,7 +17,7 @@ import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
  * 
  */
 public class DBController {
-	
+
 	private int globalright = 3;
 	/**
 	 * User, der sich in der DB anmeldet
@@ -98,14 +98,11 @@ public class DBController {
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
 		globalright = checkright();
-		if (globalright < 3){
-		// Wenn admin	
-		}
-		else if(globalright <2)
-		{
-		// Wenn Viewuser (mit schreibrechten)	
-		}
-		else{
+		if (globalright < 3) {
+			// Wenn admin
+		} else if (globalright < 2) {
+			// Wenn Viewuser (mit schreibrechten)
+		} else {
 			// alles andere TODO: Schreibrechte für View richtig abprüfen
 		}
 	}

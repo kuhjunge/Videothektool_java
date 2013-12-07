@@ -14,7 +14,7 @@ import java.awt.event.ComponentEvent;
 
 /**
  * @author Rene Kremer
- *  @version 1
+ * @version 1
  */
 public class UnpaidInvoiceDialog extends JDialog {
 
@@ -28,8 +28,6 @@ public class UnpaidInvoiceDialog extends JDialog {
 	 * Anzeigetext für das Textfeld
 	 */
 	private String value = "";
-	
-
 
 	/**
 	 * Create the dialog.
@@ -43,6 +41,7 @@ public class UnpaidInvoiceDialog extends JDialog {
 		addComponentListener(new ComponentAdapter() {
 			/**
 			 * Beim Anzeigen wird der Text gesetzt
+			 * 
 			 * @param arg0
 			 */
 			@Override
@@ -97,10 +96,11 @@ public class UnpaidInvoiceDialog extends JDialog {
 
 	/**
 	 * Setzt das Attribut Value
+	 * 
 	 * @param value
 	 */
-	public void setValue(String value){
+	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 }

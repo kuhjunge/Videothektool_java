@@ -7,17 +7,17 @@ import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * @author Kuhjunge
- *
+ * 
  */
 @DatabaseTable(tableName = "Filmbestand")
 public class Filmbestand extends Film {
 
 	@DatabaseField
 	private String genre;
-	
+
 	@DatabaseField
 	private double medienaufschlag;
-	
+
 	public Filmbestand(int idFilm, String titel, int jahr, int laufzeit,
 			double imdbWertung, String plot, int fsk, double grundpreis,
 			double neuheitenZuschlag, String genre, double medienaufschlag) {
@@ -33,11 +33,13 @@ public class Filmbestand extends Film {
 		this.neuheiten_Zuschlag = neuheitenZuschlag;
 		this.neu_Bis = null;
 		this.genre_ref = 0;
-		this.genre = genre ;
+		this.genre = genre;
 		this.medienaufschlag = medienaufschlag;
-		
+
 	}
-	public Filmbestand() {}
+
+	public Filmbestand() {
+	}
 
 	/**
 	 * @return the genre
@@ -47,7 +49,8 @@ public class Filmbestand extends Film {
 	}
 
 	/**
-	 * @param genre the genre to set
+	 * @param genre
+	 *            the genre to set
 	 */
 	public void setStringGenre(String genre) {
 		this.genre = genre;
@@ -61,7 +64,8 @@ public class Filmbestand extends Film {
 	}
 
 	/**
-	 * @param medienaufschlag the medienaufschlag to set
+	 * @param medienaufschlag
+	 *            the medienaufschlag to set
 	 */
 	public void setMedienaufschlag(double medienaufschlag) {
 		this.medienaufschlag = medienaufschlag;
