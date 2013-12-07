@@ -37,8 +37,8 @@ public class AddMovieDialog extends JDialog {
 	private Film f = null;
 	private JButton btnFilmHinzufgen = new JButton("Film hinzuf\u00FCgen");
 	private int filmID = 0;
-	private DBController db ;//= new FilmDB();
-	Map<Integer,String> genre ;
+	private DBController db;// = new FilmDB();
+	Map<Integer, String> genre;
 
 	/**
 	 * Setzt eine Filmauswahl in das Fenster!
@@ -59,7 +59,7 @@ public class AddMovieDialog extends JDialog {
 			textFieldNewCost.setText("0");
 			this.comboBoxGenre.setSelectedItem(genre.get(f.getGenre()));
 			filmID = f.getID();
-			this.btnFilmHinzufgen.setText("Film aendern"); 
+			this.btnFilmHinzufgen.setText("Film aendern");
 		}
 	}
 
@@ -67,20 +67,20 @@ public class AddMovieDialog extends JDialog {
 	 * leert das Filmmanager Fenster!
 	 */
 	public void clear() {
-			this.f = null;
-			textFieldTitle.setText("");
-			textFieldYear.setText( "");
-			textFieldPlaytime.setText("");
-			textFieldIMDB.setText("");
-			txtrStory.setText("");
-			textFieldFSK.setText("");
-			textFieldBasicCost.setText("0");
-			textFieldNewCost.setText("0");
-			this.comboBoxGenre.setSelectedItem("1");
-			filmID = 0;
-			this.btnFilmHinzufgen.setText("Film hinzuf\u00FCgen"); 
+		this.f = null;
+		textFieldTitle.setText("");
+		textFieldYear.setText("");
+		textFieldPlaytime.setText("");
+		textFieldIMDB.setText("");
+		txtrStory.setText("");
+		textFieldFSK.setText("");
+		textFieldBasicCost.setText("0");
+		textFieldNewCost.setText("0");
+		this.comboBoxGenre.setSelectedItem("1");
+		filmID = 0;
+		this.btnFilmHinzufgen.setText("Film hinzuf\u00FCgen");
 	}
-	
+
 	/**
 	 * Create the dialog.
 	 * 
@@ -90,6 +90,9 @@ public class AddMovieDialog extends JDialog {
 		setTitle("Filmmanager");
 		db = dbi;
 		genre = db.getGenre();
+		if (!db.isDBOnline()) {
+			dispose();
+		}
 		setBounds(100, 100, 450, 259);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -100,26 +103,27 @@ public class AddMovieDialog extends JDialog {
 			btnFilmHinzufgen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-					int genreid = 1;
-					for (Map.Entry<Integer, String> me : genre.entrySet()) {
-					    if(me.getValue() == comboBoxGenre.getSelectedItem())
-					    {
-					    	genreid = me.getKey();
-					    	break;
-					    }
-					}
-					f = new Film(filmID, textFieldTitle.getText(), Integer
-							.parseInt(textFieldYear.getText()), Integer
-							.parseInt(textFieldPlaytime.getText()), Double
-							.parseDouble(textFieldIMDB.getText()), txtrStory
-							.getText(),
-							Integer.parseInt(textFieldFSK.getText()), Double
-									.parseDouble(textFieldBasicCost.getText()),
-							Double.parseDouble(textFieldNewCost.getText()),genreid);
-					db.writeMovie(f);
-					}
-					catch (Exception fehler)
-					{
+						int genreid = 1;
+						for (Map.Entry<Integer, String> me : genre.entrySet()) {
+							if (me.getValue() == comboBoxGenre
+									.getSelectedItem()) {
+								genreid = me.getKey();
+								break;
+							}
+						}
+						f = new Film(
+								filmID,
+								textFieldTitle.getText(),
+								Integer.parseInt(textFieldYear.getText()),
+								Integer.parseInt(textFieldPlaytime.getText()),
+								Double.parseDouble(textFieldIMDB.getText()),
+								txtrStory.getText(),
+								Integer.parseInt(textFieldFSK.getText()),
+								Double.parseDouble(textFieldBasicCost.getText()),
+								Double.parseDouble(textFieldNewCost.getText()),
+								genreid);
+						db.writeMovie(f);
+					} catch (Exception fehler) {
 						System.out.println("Fehler beim Eingabeformat!");
 					}
 				}
@@ -168,7 +172,7 @@ public class AddMovieDialog extends JDialog {
 		JLabel lblNeuBis = new JLabel("Neu Bis:");
 		lblNeuBis.setBounds(242, 64, 46, 14);
 		contentPanel.add(lblNeuBis);
-		
+
 		JLabel lblGenre = new JLabel("Genre:");
 		lblGenre.setBounds(242, 89, 46, 14);
 		contentPanel.add(lblGenre);
@@ -207,11 +211,13 @@ public class AddMovieDialog extends JDialog {
 		textFieldNewto.setColumns(10);
 		textFieldNewto.setBounds(338, 61, 86, 20);
 		contentPanel.add(textFieldNewto);
-		
+
 		comboBoxGenre.setBounds(338, 86, 86, 20);
 		contentPanel.add(comboBoxGenre);
-		for (String g : genre.values()) {
-			comboBoxGenre.addItem(g);
+		if (db.isDBOnline()) {
+			for (String g : genre.values()) {
+				comboBoxGenre.addItem(g);
+			}
 		}
 
 		JButton btnBeenden = new JButton("beenden");

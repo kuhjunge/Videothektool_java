@@ -1,23 +1,32 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JTextField;
+
 import java.awt.Component;
+import java.sql.SQLException;
 import java.util.List;
+
 import javax.swing.Box;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
 //import org.eclipse.wb.swing.FocusTraversalOnArray;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -26,12 +35,13 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
  * @author Simon Krause
- *  @version 1.1
+ * @version 1.1
  */
 public class VideothekFrame extends JFrame {
 
@@ -67,7 +77,7 @@ public class VideothekFrame extends JFrame {
 			public void run() {
 				try {
 					VideothekFrame frame = new VideothekFrame();
-					frame.setVisible(true);					
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -89,7 +99,12 @@ public class VideothekFrame extends JFrame {
 			}
 		});
 		this.db = new DBController();
-		db.connect();
+		try {
+			db.connect();
+		} catch (SQLException e) {
+			db.close();
+			System.exit(0);
+		}
 		this.unpaidInvoiceDialog = new UnpaidInvoiceDialog(this,
 				"Offene Rechnungen", true);
 		this.addMovieDialog = new AddMovieDialog(this, db);
@@ -209,7 +224,7 @@ public class VideothekFrame extends JFrame {
 					table.setValueAt(db.getAnzahlDVD(filme.get(i).getTitel()),
 							i, 1);
 					table.setValueAt(
-							db.getAnzahlBluRay(filme.get(i).getTitel()), i, 2);				
+							db.getAnzahlBluRay(filme.get(i).getTitel()), i, 2);
 				}
 
 			}

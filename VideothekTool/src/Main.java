@@ -14,6 +14,11 @@ import javax.swing.JFrame;
 public class Main extends JFrame {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4648172894076113183L;
+
+	/**
 	 * @param args
 	 */
 	/*

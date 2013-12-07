@@ -56,12 +56,11 @@ public class DBController {
 	 * Es wird keine Verbindung zur Datenbank aufgebaut.
 	 */
 	public DBController() {
-		SaveLoader s = new SaveLoader();
-		s.read();
-		username = s.getUsername();
-		password = s.getPassword();
-		url = s.getUrl();
-		dbName = s.getDbName();		
+		SaveLoader.read();
+		username = SaveLoader.getUsername();
+		password = SaveLoader.getPassword();
+		url = SaveLoader.getUrl();
+		dbName = SaveLoader.getDbName();		
 	}
 
 	/**
@@ -79,8 +78,7 @@ public class DBController {
 	/**
 	 * Verbinden durch ORMLite mit Datenbank
 	 */
-	public void connect() {
-		try {
+	public void connect() throws SQLException {
 			String databaseUrl = this.url + "/" + this.dbName + "?user="
 					+ username + "&password=" + password;
 
@@ -92,9 +90,15 @@ public class DBController {
 					Film.class);
 			this.genreDao = DaoManager.createDao(this.connectionSource,
 					Genre.class);
-
-		} catch (Exception e) {
-			System.out.println(e.toString());
+			this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter Verbindung
+	}
+	
+	public boolean isDBOnline()
+	{
+		try {
+			return this.filmDao.isTableExists();
+		} catch (SQLException e) {
+			return false;
 		}
 	}
 

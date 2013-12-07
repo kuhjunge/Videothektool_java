@@ -3,7 +3,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,28 +23,27 @@ import org.w3c.dom.NodeList;
  */
 public class SaveLoader {
 
-	private String username = "";
-	private String password = "";
-	private String url = "";
-	private String dbName = "";
+	private static String username = "";
+	private static String password = "";
+	private static String url = "";
+	private static String dbName = "";
 	/**
-	 * SavePath für die Login-Daten
-	 * Im Verzeichnis der Anwendung
+	 * SavePath für die Login-Daten Im Verzeichnis der Anwendung
 	 */
-	private String savepath = /*defaultDirectory() + File.separator +*/ "dbcon.xml";
-	private boolean saveuser = false;
+	private static String savepath = /* defaultDirectory() + File.separator + */"dbcon.xml";
+	private static boolean saveuser = false;
 
 	/**
 	 * @return the username
 	 */
-	public String getSavepath() {
+	public static String getSavepath() {
 		return savepath;
 	}
-
+	
 	/**
 	 * @return the username
 	 */
-	public String getUsername() {
+	public static String getUsername() {
 		return username;
 	}
 
@@ -53,14 +51,14 @@ public class SaveLoader {
 	 * @param username
 	 *            the username to set
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public static void setUsername(String un) {
+		username = un;
 	}
 
 	/**
 	 * @return the password
 	 */
-	public String getPassword() {
+	public static String getPassword() {
 		return password;
 	}
 
@@ -68,14 +66,14 @@ public class SaveLoader {
 	 * @param password
 	 *            the password to set
 	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public static void setPassword(String pw) {
+		password = pw;
 	}
 
 	/**
 	 * @return the url
 	 */
-	public String getUrl() {
+	public static String getUrl() {
 		return url;
 	}
 
@@ -83,14 +81,14 @@ public class SaveLoader {
 	 * @param url
 	 *            the url to set
 	 */
-	public void setUrl(String url) {
-		this.url = url;
+	public static void setUrl(String urli) {
+		url = urli;
 	}
 
 	/**
 	 * @return the dbName
 	 */
-	public String getDbName() {
+	public static String getDbName() {
 		return dbName;
 	}
 
@@ -98,27 +96,24 @@ public class SaveLoader {
 	 * @param dbName
 	 *            the dbName to set
 	 */
-	public void setDbName(String dbName) {
-		this.dbName = dbName;
+	public static void setDbName(String dbn) {
+		dbName = dbn;
 	}
 
-	private static String defaultDirectory() {
-		String OS = System.getProperty("os.name").toUpperCase();
-		if (OS.contains("WIN"))
-			return System.getenv("APPDATA");
-		else if (OS.contains("MAC"))
-			return System.getProperty("user.home") + "/Library/Application "
-					+ "Support";
-		else if (OS.contains("NUX"))
-			return System.getProperty("user.home");
-		return System.getProperty("user.dir");
-	}
+	/*
+	 * private static String defaultDirectory() { String OS =
+	 * System.getProperty("os.name").toUpperCase(); if (OS.contains("WIN"))
+	 * return System.getenv("APPDATA"); else if (OS.contains("MAC")) return
+	 * System.getProperty("user.home") + "/Library/Application " + "Support";
+	 * else if (OS.contains("NUX")) return System.getProperty("user.home");
+	 * return System.getProperty("user.dir"); }
+	 */
 
 	/**
 	 * Speichert eine XML Datei mit Filminformationen in den entsprechenden
 	 * Ordner
 	 */
-	public void saveToXML() {
+	public static void saveToXML() {
 		Document dom;
 		Element e = null;
 
@@ -178,7 +173,7 @@ public class SaveLoader {
 		}
 	}
 
-	public void read() {
+	public static void read() {
 		File d = new File(savepath);
 		if (d.exists()) {
 			readXML();
@@ -192,7 +187,7 @@ public class SaveLoader {
 	 *            - Der Pfad der Datei
 	 * @return IMDB ID
 	 */
-	private void readXML() {
+	private static void readXML() {
 		ArrayList<String> rolev = new ArrayList<String>();
 		Document dom;
 		// Make an instance of the DocumentBuilderFactory
@@ -227,7 +222,8 @@ public class SaveLoader {
 				if (!dbName.isEmpty())
 					rolev.add(dbName);
 			}
-			if (username != "" && password != "")  saveuser = true; // Nutzerdaten werden standardmäßig gespeichert
+			if (username != "" && password != "")
+				saveuser = true; // Nutzerdaten werden standardmäßig gespeichert
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -240,7 +236,7 @@ public class SaveLoader {
 		 */
 	}
 
-	private String getTextValue(String def, Element doc, String tag) {
+	private static String getTextValue(String def, Element doc, String tag) {
 		String value = def;
 		NodeList nl;
 		nl = doc.getElementsByTagName(tag);
@@ -253,7 +249,7 @@ public class SaveLoader {
 	/**
 	 * @return the saveuser
 	 */
-	public boolean isSaveuser() {
+	public static boolean isSaveuser() {
 		return saveuser;
 	}
 
@@ -261,8 +257,8 @@ public class SaveLoader {
 	 * @param saveuser
 	 *            the saveuser to set
 	 */
-	public void setSaveuser(boolean saveuser) {
-		this.saveuser = saveuser;
+	public static void setSaveuser(boolean su) {
+		saveuser = su;
 	}
 
 }
