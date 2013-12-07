@@ -30,7 +30,7 @@ public class SaveLoader {
 	/**
 	 * SavePath für die Login-Daten Im Verzeichnis der Anwendung
 	 */
-	private static String savepath = /* defaultDirectory() + File.separator + */"dbcon.xml";
+	private static String savepath =  defaultDirectory() + File.separator + "dbcon.xml";
 	private static boolean saveuser = false;
 
 	/**
@@ -107,14 +107,17 @@ public class SaveLoader {
 		dbName = dbn;
 	}
 
-	/*
-	 * private static String defaultDirectory() { String OS =
-	 * System.getProperty("os.name").toUpperCase(); if (OS.contains("WIN"))
-	 * return System.getenv("APPDATA"); else if (OS.contains("MAC")) return
-	 * System.getProperty("user.home") + "/Library/Application " + "Support";
-	 * else if (OS.contains("NUX")) return System.getProperty("user.home");
-	 * return System.getProperty("user.dir"); }
-	 */
+	private static String defaultDirectory() {
+		String OS = System.getProperty("os.name").toUpperCase();
+		if (OS.contains("WIN"))
+			return System.getenv("APPDATA");
+		else if (OS.contains("MAC"))
+			return System.getProperty("user.home") + "/Library/Application "
+					+ "Support";
+		else if (OS.contains("NUX"))
+			return System.getProperty("user.home");
+		return System.getProperty("user.dir");
+	}
 
 	/**
 	 * Speichert eine XML Datei mit Filminformationen in den entsprechenden
