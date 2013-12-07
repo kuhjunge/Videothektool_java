@@ -37,6 +37,7 @@ public class Filmbestand extends Film {
 		this.medienaufschlag = medienaufschlag;
 		
 	}
+	public Filmbestand() {}
 
 	/**
 	 * @return the genre

@@ -9,6 +9,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 
 /**
  * @author Kuhjunge, Simon Krause, Rene Kremer
@@ -16,50 +17,56 @@ import com.j256.ormlite.support.ConnectionSource;
  * 
  */
 public class DBController {
+	
+	private int globalright = 3;
 	/**
 	 * User, der sich in der DB anmeldet
 	 */
 	private String username = "";
-	
+
 	/**
 	 * Passwort des Users
 	 */
-	private String password = "";	
-	
+	private String password = "";
+
 	/**
 	 * URL der Datenbank-Verbindung
 	 */
 	private String url = "";
-	
+
 	/**
 	 * ConnectionSource von ORMLite
 	 */
 	private ConnectionSource connectionSource = null;
-	
+
 	/**
 	 * Name des DB-Schemas
 	 */
 	private String dbName = "";
-	
+
 	/**
 	 * Dao für Film-Entität der DB
 	 */
 	private Dao<Film, String> filmDao;
-	
+
+	/**
+	 * Dao für Film-Entität der DB
+	 */
+	private Dao<Filmbestand, String> filmbDao;
+
 	/**
 	 * Dao für Genre-Entität der DB
 	 */
 	private Dao<Genre, String> genreDao;
 
 	/**
-	 * Default- Konstruktor
-	 * Es wird keine Verbindung zur Datenbank aufgebaut.
+	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
 	 */
 	public DBController() {
 		username = SaveLoader.getUsername();
 		password = SaveLoader.getPassword();
 		url = SaveLoader.getUrl();
-		dbName = SaveLoader.getDbName();		
+		dbName = SaveLoader.getDbName();
 	}
 
 	/**
@@ -78,24 +85,59 @@ public class DBController {
 	 * Verbinden durch ORMLite mit Datenbank
 	 */
 	public void connect() throws SQLException {
-			String databaseUrl = this.url + "/" + this.dbName + "?user="
-					+ username + "&password=" + password;
+		String databaseUrl = this.url + "/" + this.dbName + "?user=" + username
+				+ "&password=" + password;
 
-			// create a connection source to our database
-			this.connectionSource = new JdbcConnectionSource(databaseUrl);
+		// create a connection source to our database
+		this.connectionSource = new JdbcConnectionSource(databaseUrl);
 
-			// instantiate the dao
-			this.filmDao = DaoManager.createDao(this.connectionSource,
-					Film.class);
-			this.genreDao = DaoManager.createDao(this.connectionSource,
-					Genre.class);
-			this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter Verbindung
-			
-			//this.filmDao.isUpdatable();
+		// instantiate the dao
+		this.filmDao = DaoManager.createDao(this.connectionSource, Film.class);
+		this.genreDao = DaoManager
+				.createDao(this.connectionSource, Genre.class);
+		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
+										// Verbindung
+		globalright = checkright();
+		if (globalright < 3){
+		// Wenn admin	
+		}
+		else if(globalright <2)
+		{
+		// Wenn Viewuser (mit schreibrechten)	
+		}
+		else{
+			// alles andere TODO: Schreibrechte für View richtig abprüfen
+		}
 	}
-	
-	public boolean isDBOnline()
-	{
+
+	public int checkright() {
+		int recht = 3;
+		try {
+			if (this.genreDao.queryForAll() != null) {
+				System.out.println("Adminrechte");
+			}
+		} catch (MySQLSyntaxErrorException e) {
+			// User ist Viewuser
+			recht = 2;
+			System.out.println("Viewuster erkannt");
+			try {
+				this.filmbDao = DaoManager.createDao(this.connectionSource,
+						Filmbestand.class);
+				if (!this.filmbDao.isUpdatable()) {
+					System.out.println("keine schreibrechte");
+					recht = 1;
+				}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} catch (SQLException e) {
+			recht = 0;
+		}
+		return recht;
+	}
+
+	public boolean isDBOnline() {
 		try {
 			return this.filmDao.isTableExists();
 		} catch (SQLException e) {
@@ -116,18 +158,17 @@ public class DBController {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gibt eine List<Genre> zurück. Es wird im FilmDao.queryForAll() aufgerufen
 	 * 
 	 * @return
 	 */
-	public Map<Integer,String> getGenre() {
+	public Map<Integer, String> getGenre() {
 		try {
-			Map<Integer,String> m = new HashMap<Integer,String>();
-			List<Genre> l =  this.genreDao.queryForAll();
-			for(Genre g : l)
-			{
+			Map<Integer, String> m = new HashMap<Integer, String>();
+			List<Genre> l = this.genreDao.queryForAll();
+			for (Genre g : l) {
 				m.put(g.getID(), g.getGenre());
 			}
 			return m;
