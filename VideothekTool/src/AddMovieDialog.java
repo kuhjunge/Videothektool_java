@@ -88,7 +88,7 @@ public class AddMovieDialog extends JDialog {
 	public AddMovieDialog(JFrame frame, DBController dbi) {
 		setTitle("Filmmanager");
 		db = dbi;
-		genre = db.getGenre();
+		genre = db.getGenre();		
 		if (!db.isDBOnline()) {
 			dispose();
 		}
@@ -121,6 +121,7 @@ public class AddMovieDialog extends JDialog {
 								Double.parseDouble(textFieldNewCost.getText()),
 								genreid);
 						db.writeMovie(f);
+						dispose();
 					} catch (Exception fehler) {
 						System.out.println("Fehler beim Eingabeformat!");
 					}
@@ -212,10 +213,12 @@ public class AddMovieDialog extends JDialog {
 
 		comboBoxGenre.setBounds(338, 86, 86, 20);
 		contentPanel.add(comboBoxGenre);
-		if (db.isDBOnline()) {
+		try{
 			for (String g : genre.values()) {
 				comboBoxGenre.addItem(g);
 			}
+		}catch(Exception e){
+			System.out.println(e.toString());
 		}
 
 		JButton btnBeenden = new JButton("beenden");
