@@ -49,10 +49,6 @@ public class DBController {
 	 */
 	private Dao<Film, String> filmDao;
 
-	/**
-	 * Dao für Film-Entität der DB
-	 */
-	private Dao<Filmbestand, String> filmbDao;
 
 	/**
 	 * Dao für Genre-Entität der DB
@@ -118,9 +114,9 @@ public class DBController {
 			recht = 2;
 			System.out.println("Viewuster erkannt");
 			try {
-				this.filmbDao = DaoManager.createDao(this.connectionSource,
-						Filmbestand.class);
-				if (!this.filmbDao.isUpdatable()) {
+				this.filmDao = DaoManager.createDao(this.connectionSource,
+						Film.class);
+				if (!this.filmDao.isUpdatable()) {
 					System.out.println("keine schreibrechte");
 					recht = 1;
 				}

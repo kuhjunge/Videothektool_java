@@ -9,11 +9,9 @@ import com.j256.ormlite.table.DatabaseTable;
  * @version 1.1
  * 
  */
-@DatabaseTable(tableName = "Film")
+@DatabaseTable(tableName = "Film_Stammdaten")
 public class Film {
 	@DatabaseField(id = true)
-	protected int idFilm;
-	@DatabaseField
 	protected String titel;
 	@DatabaseField
 	protected int jahr;
@@ -45,12 +43,10 @@ public class Film {
 	 * @param idFilm
 	 *            Die ID des Filmes. Wenn keine vorhanden mit 0 Kennzeichnen
 	 */
-	public Film(int idFilm, String titel, int jahr, int laufzeit,
+	public Film(String titel, int jahr, int laufzeit,
 			double imdbWertung, String plot, int fsk, double grundpreis,
 			double neuheitenZuschlag, Integer genre_ref) {
-		super();
-		if (idFilm > 0)
-			this.idFilm = idFilm;
+		super();		
 		this.titel = titel;
 		this.jahr = jahr;
 		this.laufzeit = laufzeit;
@@ -67,13 +63,7 @@ public class Film {
 		return this.titel;
 	}
 
-	/**
-	 * @return the id
-	 */
-	public int getID() {
-		return this.idFilm;
-	}
-
+	
 	/**
 	 * @return the id
 	 */
@@ -129,7 +119,7 @@ public class Film {
 	 */
 	@Override
 	public String toString() {
-		return "Filmdatensatz: ID=" + idFilm + ", Titel=" + titel + ", Jahr="
+		return "Filmdatensatz: Titel=" + titel + ", Jahr="
 				+ this.jahr + ", Laufzeit=" + laufzeit + ", IMDB="
 				+ imdb_Wertung + ", Plot=" + plot + ", FSK=" + fsk
 				+ ", Grundpreis=" + grundpreis + ", N-Zuschlag="

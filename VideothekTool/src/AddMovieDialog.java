@@ -57,8 +57,7 @@ public class AddMovieDialog extends JDialog {
 			textFieldFSK.setText(f.getFsk() + "");
 			textFieldBasicCost.setText("0");
 			textFieldNewCost.setText("0");
-			this.comboBoxGenre.setSelectedItem(genre.get(f.getGenre()));
-			filmID = f.getID();
+			this.comboBoxGenre.setSelectedItem(genre.get(f.getGenre()));			
 			this.btnFilmHinzufgen.setText("Film aendern");
 		}
 	}
@@ -111,8 +110,7 @@ public class AddMovieDialog extends JDialog {
 								break;
 							}
 						}
-						f = new Film(
-								filmID,
+						f = new Film(								
 								textFieldTitle.getText(),
 								Integer.parseInt(textFieldYear.getText()),
 								Integer.parseInt(textFieldPlaytime.getText()),
