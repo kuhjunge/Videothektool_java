@@ -45,15 +45,24 @@ public class DBController {
 	private String dbName = "";
 
 	/**
-	 * Dao für Film-Entität der DB
+	 * Dao für View Film_Stammdaten
 	 */
 	private Dao<Film, String> filmDao;
 
+	/**
+	 * Dao für View Filmbestand
+	 */
+	private Dao<FilmBestand, String> bestandDao;
 
 	/**
 	 * Dao für Genre-Entität der DB
 	 */
 	private Dao<Genre, String> genreDao;
+	
+	/**
+	 * Dao für View offeneRechnungen
+	 */
+	private Dao<unPaidInvoice, String> unpaidDao;
 
 	/**
 	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
@@ -91,6 +100,10 @@ public class DBController {
 		this.filmDao = DaoManager.createDao(this.connectionSource, Film.class);
 		this.genreDao = DaoManager
 				.createDao(this.connectionSource, Genre.class);
+		this.bestandDao = DaoManager.createDao(this.connectionSource,
+				FilmBestand.class);
+		this.unpaidDao = DaoManager.createDao(this.connectionSource, unPaidInvoice.class);
+
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
 		globalright = checkright();
@@ -121,7 +134,6 @@ public class DBController {
 					recht = 1;
 				}
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		} catch (SQLException e) {
@@ -172,12 +184,12 @@ public class DBController {
 	}
 
 	/**
-	 * Holt einen Film aus der Datenbank mit FilmTitel als Suchkriterium. Es
-	 * wird aber nur der erste gefundene Film mit diesem Titel zurückgegeben.
-	 * D.h. alle Filmtitel sollten eindeutig sein.
+	 * Holt einen Film aus der Datenbank mit FilmTitel und fskals Suchkriterium.
 	 * 
 	 * @param filmTitel
 	 *            Titel des Films
+	 * @param fsk 
+	 * 			FSK als Suchkriterium
 	 * @return gibt einen Film zurück
 	 */
 	public List<Film> getFilme(String filmTitel, String fsk) {
@@ -208,20 +220,14 @@ public class DBController {
 	public int getAnzahlDVD(String filmTitel) {
 		int value = 0;
 		try {
-			String query = "Select count(m.idExemplar) From Film f, Medienexemplar m, Mediumart ma "
-					+ "Where f.idFilm = m. Film_ref And  m.Medium_ref = ma.idMedium "
-					+ "and f.Titel = '"
-					+ filmTitel
-					+ "' and ma.nameMedium = 'DVD'";
-			GenericRawResults<String[]> rawResults = filmDao.queryRaw(query);
-			List<String[]> ergebnis = rawResults.getResults();
+			QueryBuilder<FilmBestand, String> queryBuilder = bestandDao
+					.queryBuilder();
+			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
+					.like("medium", "DVD");
 
-			for (String[] str : ergebnis) {
-				for (String s : str) {
-					value = Integer.valueOf(s);
-				}
-			}
-
+			PreparedQuery<FilmBestand> preparedQuery = queryBuilder.prepare();
+			List<FilmBestand> filmList = bestandDao.query(preparedQuery);
+			value = filmList.size();
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -239,21 +245,14 @@ public class DBController {
 	public int getAnzahlBluRay(String filmTitel) {
 		int value = 0;
 		try {
+			QueryBuilder<FilmBestand, String> queryBuilder = bestandDao
+					.queryBuilder();
+			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
+					.like("medium", "Blu%");
 
-			String query = "Select count(m.idExemplar) From Film f, Medienexemplar m, Mediumart ma "
-					+ "Where f.idFilm = m. Film_ref And  m.Medium_ref = ma.idMedium "
-					+ "and f.Titel = '"
-					+ filmTitel
-					+ "' and ma.nameMedium = 'Blu-Ray'";
-			GenericRawResults<String[]> rawResults = filmDao.queryRaw(query);
-			List<String[]> ergebnis = rawResults.getResults();
-
-			for (String[] str : ergebnis) {
-				for (String s : str) {
-					value = Integer.valueOf(s);
-				}
-			}
-
+			PreparedQuery<FilmBestand> preparedQuery = queryBuilder.prepare();
+			List<FilmBestand> filmList = bestandDao.query(preparedQuery);
+			value = filmList.size();
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -313,18 +312,16 @@ public class DBController {
 	 */
 	public String unpaidInvoice() {
 		String str = "";
-		try {
-			String query = "call unpaidInvoice()";
-			GenericRawResults<String[]> rawResults = filmDao.queryRaw(query);
-			List<String[]> ergebnis = rawResults.getResults();
-			String[] arrayResult = new String[ergebnis.size()];
-			str += "RechnungsNr\t\tKundenNr\t\tVorname\t\tNachname\t\tRechnungsdatum\tbezahlt am\t\tBetrag\n";
-			for (int i = 0; i < ergebnis.size(); i++) {
-				arrayResult = ergebnis.get(i);
-				for (String s : arrayResult) {
-					str += s + "\t\t";
-				}
-				str += "\n";
+		try {			
+			List<unPaidInvoice> list = unpaidDao.queryForAll();
+			str += "RechnungsDatum\tNachname\t\tVorname\t\tBetrag\t\tTelefonNummer\tEmail\n";
+			for(unPaidInvoice obj : list){
+				str += obj.getRechnung_vom()+"\t\t"
+					+  obj.getNachname()+"\t\t"
+					+  obj.getVorname()+"\t\t"
+					+  obj.getRechnungsBetrag()+"\t\t"
+					+  obj.getTelefonnummer()+"\t\t"
+					+  obj.getEmail()+"\n";
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString());
