@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import com.j256.ormlite.dao.*;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -58,7 +60,7 @@ public class DBController {
 	 * Dao f�r Genre-Entit�t der DB
 	 */
 	private Dao<Genre, String> genreDao;
-	
+
 	/**
 	 * Dao f�r View offeneRechnungen
 	 */
@@ -102,7 +104,8 @@ public class DBController {
 				.createDao(this.connectionSource, Genre.class);
 		this.bestandDao = DaoManager.createDao(this.connectionSource,
 				FilmBestand.class);
-		this.unpaidDao = DaoManager.createDao(this.connectionSource, unPaidInvoice.class);
+		this.unpaidDao = DaoManager.createDao(this.connectionSource,
+				unPaidInvoice.class);
 
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
@@ -151,7 +154,8 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt eine List<Film> zur�ck. Es wird im FilmDao.queryForAll() aufgerufen
+	 * Gibt eine List<Film> zur�ck. Es wird im FilmDao.queryForAll()
+	 * aufgerufen
 	 * 
 	 * @return
 	 */
@@ -165,7 +169,8 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt eine List<Genre> zur�ck. Es wird im FilmDao.queryForAll() aufgerufen
+	 * Gibt eine List<Genre> zur�ck. Es wird im FilmDao.queryForAll()
+	 * aufgerufen
 	 * 
 	 * @return
 	 */
@@ -188,8 +193,8 @@ public class DBController {
 	 * 
 	 * @param filmTitel
 	 *            Titel des Films
-	 * @param fsk 
-	 * 			FSK als Suchkriterium
+	 * @param fsk
+	 *            FSK als Suchkriterium
 	 * @return gibt einen Film zur�ck
 	 */
 	public List<Film> getFilme(String filmTitel, String fsk) {
@@ -284,8 +289,8 @@ public class DBController {
 	}
 
 	/**
-	 * Diese Methode gibt einen Film zur�ck, der mit dem �bergabeparameter des
-	 * Titels �bereinstimmt
+	 * Diese Methode gibt einen Film zur�ck, der mit dem �bergabeparameter
+	 * des Titels �bereinstimmt
 	 * 
 	 * @param filmTitel
 	 *            zu suchender Filmtitel
@@ -312,16 +317,15 @@ public class DBController {
 	 */
 	public String unpaidInvoice() {
 		String str = "";
-		try {			
+		try {
 			List<unPaidInvoice> list = unpaidDao.queryForAll();
 			str += "RechnungsDatum\tNachname\t\tVorname\t\tBetrag\t\tTelefonNummer\tEmail\n";
-			for(unPaidInvoice obj : list){
-				str += obj.getRechnung_vom()+"\t\t"
-					+  obj.getNachname()+"\t\t"
-					+  obj.getVorname()+"\t\t"
-					+  obj.getRechnungsBetrag()+"\t\t"
-					+  obj.getTelefonnummer()+"\t\t"
-					+  obj.getEmail()+"\n";
+			for (unPaidInvoice obj : list) {
+				str += obj.getRechnung_vom() + "\t\t" + obj.getNachname()
+						+ "\t\t" + obj.getVorname() + "\t\t"
+						+ obj.getRechnungsBetrag() + "\t\t"
+						+ obj.getTelefonnummer() + "\t\t" + obj.getEmail()
+						+ "\n";
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString());
@@ -339,7 +343,8 @@ public class DBController {
 			this.filmDao.createOrUpdate(f);
 			return true;
 		} catch (SQLException e) {
-			System.out.println("Zugriffsfehler - Keine Schreibrechte!");
+			JOptionPane.showMessageDialog(null, "Fehler beim Schreibzugriff",
+					"Fehler", JOptionPane.OK_OPTION);
 			return false;
 		}
 	}
