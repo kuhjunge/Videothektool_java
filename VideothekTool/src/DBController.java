@@ -45,22 +45,22 @@ public class DBController {
 	private String dbName = "";
 
 	/**
-	 * Dao für View Film_Stammdaten
+	 * Dao fï¿½r View Film_Stammdaten
 	 */
 	private Dao<Film, String> filmDao;
 
 	/**
-	 * Dao für View Filmbestand
+	 * Dao fï¿½r View Filmbestand
 	 */
 	private Dao<FilmBestand, String> bestandDao;
 
 	/**
-	 * Dao für Genre-Entität der DB
+	 * Dao fï¿½r Genre-Entitï¿½t der DB
 	 */
 	private Dao<Genre, String> genreDao;
 	
 	/**
-	 * Dao für View offeneRechnungen
+	 * Dao fï¿½r View offeneRechnungen
 	 */
 	private Dao<unPaidInvoice, String> unpaidDao;
 
@@ -75,7 +75,7 @@ public class DBController {
 	}
 
 	/**
-	 * Schließen der Verbindung
+	 * Schlieï¿½en der Verbindung
 	 */
 	public void close() {
 		if (this.connectionSource != null) {
@@ -112,7 +112,7 @@ public class DBController {
 		} else if (globalright < 2) {
 			// Wenn Viewuser (mit schreibrechten)
 		} else {
-			// alles andere TODO: Schreibrechte für View richtig abprüfen
+			// alles andere TODO: Schreibrechte fï¿½r View richtig abprï¿½fen
 		}
 	}
 
@@ -151,7 +151,7 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt eine List<Film> zurück. Es wird im FilmDao.queryForAll() aufgerufen
+	 * Gibt eine List<Film> zurï¿½ck. Es wird im FilmDao.queryForAll() aufgerufen
 	 * 
 	 * @return
 	 */
@@ -165,7 +165,7 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt eine List<Genre> zurück. Es wird im FilmDao.queryForAll() aufgerufen
+	 * Gibt eine List<Genre> zurï¿½ck. Es wird im FilmDao.queryForAll() aufgerufen
 	 * 
 	 * @return
 	 */
@@ -190,7 +190,7 @@ public class DBController {
 	 *            Titel des Films
 	 * @param fsk 
 	 * 			FSK als Suchkriterium
-	 * @return gibt einen Film zurück
+	 * @return gibt einen Film zurï¿½ck
 	 */
 	public List<Film> getFilme(String filmTitel, String fsk) {
 		List<Film> filmList = new LinkedList<Film>();
@@ -211,11 +211,11 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt die Anzahl der vorhandenen Exemplare als DVD zurück
+	 * Gibt die Anzahl der vorhandenen Exemplare als DVD zurï¿½ck
 	 * 
 	 * @param filmTitel
 	 *            zu suchender Film
-	 * @return Rückgabe der Anzahl der Filme als DVD
+	 * @return Rï¿½ckgabe der Anzahl der Filme als DVD
 	 */
 	public int getAnzahlDVD(String filmTitel) {
 		int value = 0;
@@ -236,11 +236,11 @@ public class DBController {
 
 	/**
 	 * Gibt die Anzahl der vorhandenen Exemplare als Blu-Ray eines FilmTitels
-	 * zurück
+	 * zurï¿½ck
 	 * 
 	 * @param filmTitel
 	 *            zu suchender Film
-	 * @return Rückgabe der Anzahl der Filme als Blu-Rays
+	 * @return Rï¿½ckgabe der Anzahl der Filme als Blu-Rays
 	 */
 	public int getAnzahlBluRay(String filmTitel) {
 		int value = 0;
@@ -260,7 +260,7 @@ public class DBController {
 	}
 
 	/**
-	 * Gibt eine Liste der vorhandenen MedienArten zurück
+	 * Gibt eine Liste der vorhandenen MedienArten zurï¿½ck
 	 * 
 	 * @return
 	 */
@@ -284,12 +284,12 @@ public class DBController {
 	}
 
 	/**
-	 * Diese Methode gibt einen Film zurück, der mit dem Übergabeparameter des
-	 * Titels übereinstimmt
+	 * Diese Methode gibt einen Film zurï¿½ck, der mit dem ï¿½bergabeparameter des
+	 * Titels ï¿½bereinstimmt
 	 * 
 	 * @param filmTitel
 	 *            zu suchender Filmtitel
-	 * @return gibt den passenden Film zurück
+	 * @return gibt den passenden Film zurï¿½ck
 	 */
 	public Film getFilm(String filmTitel) {
 		List<Film> filmList = new LinkedList<Film>();
@@ -308,7 +308,7 @@ public class DBController {
 	/**
 	 * Diese Methode ruft die StoredProcedure "UnpaidInvoice" auf.
 	 * 
-	 * @return Gibt einen String aller offenen Rechnungen zurück
+	 * @return Gibt einen String aller offenen Rechnungen zurï¿½ck
 	 */
 	public String unpaidInvoice() {
 		String str = "";
@@ -339,7 +339,7 @@ public class DBController {
 			this.filmDao.createOrUpdate(f);
 			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Zugriffsfehler - Keine Schreibrechte!");
 			return false;
 		}
 	}
