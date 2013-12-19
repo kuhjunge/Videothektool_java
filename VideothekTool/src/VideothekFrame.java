@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.Point;
 
 import javax.swing.JFrame;
@@ -41,8 +40,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.JSeparator;
 
 /**
@@ -150,7 +147,7 @@ public class VideothekFrame extends JFrame {
 
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 349);
+		setBounds(100, 100, 500, 350);
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -350,8 +347,7 @@ public class VideothekFrame extends JFrame {
 				case ("FSK 18 Jahre"):
 					fsk = "18";
 				}
-
-				// List<Film> filme = db.getFilme();
+				
 				List<Film> filme = db.getFilme(textField.getText(), fsk);
 				updateTable(filme.size());
 

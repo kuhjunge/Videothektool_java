@@ -11,7 +11,6 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 
 /**
  * @author Kuhjunge, Simon Krause, Rene Kremer
@@ -60,8 +59,11 @@ public class DBController {
 	 * Dao für Genre-Entität der DB
 	 */
 	private Dao<Genre, String> genreDao;
-	
-	
+
+	/**
+	 * Dao für View Kundendaten
+	 */
+	private Dao<Kunde, String> kundeDao;
 
 	/**
 	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
@@ -101,7 +103,9 @@ public class DBController {
 				.createDao(this.connectionSource, Genre.class);
 		this.bestandDao = DaoManager.createDao(this.connectionSource,
 				FilmBestand.class);
-		
+		this.kundeDao = DaoManager
+				.createDao(this.connectionSource, Kunde.class);
+
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
 		globalright = checkright();
@@ -116,33 +120,22 @@ public class DBController {
 
 	/**
 	 * Methode überprüft, ob Filialleiter-Rechte vorhanden sind
+	 * 
 	 * @return 1 für Mitarbeiter, 2 für Filialleitung
 	 */
 	public int checkright() {
-		//TODO Bitte zu ändern!!!!
-		/*int recht = 3;
-		try {
-			if (this.genreDao.queryForAll() != null) {
-				System.out.println("Adminrechte");
-			}
-		} catch (MySQLSyntaxErrorException e) {
-			// User ist Viewuser
-			recht = 2;
-			System.out.println("Viewuster erkannt");
-			try {
-				this.filmDao = DaoManager.createDao(this.connectionSource,
-						Film.class);
-				if (!this.filmDao.isUpdatable()) {
-					System.out.println("keine schreibrechte");
-					recht = 1;
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		} catch (SQLException e) {
-			recht = 0;
-		}
-		//return recht;*/
+		// TODO Bitte zu ändern!!!!
+		/*
+		 * int recht = 3; try { if (this.genreDao.queryForAll() != null) {
+		 * System.out.println("Adminrechte"); } } catch
+		 * (MySQLSyntaxErrorException e) { // User ist Viewuser recht = 2;
+		 * System.out.println("Viewuster erkannt"); try { this.filmDao =
+		 * DaoManager.createDao(this.connectionSource, Film.class); if
+		 * (!this.filmDao.isUpdatable()) {
+		 * System.out.println("keine schreibrechte"); recht = 1; } } catch
+		 * (SQLException e1) { e1.printStackTrace(); } } catch (SQLException e)
+		 * { recht = 0; } //return recht;
+		 */
 		return 2;
 	}
 
@@ -192,8 +185,8 @@ public class DBController {
 	 * 
 	 * @param filmTitel
 	 *            Titel des Films
-	 * @param fsk 
-	 * 			FSK als Suchkriterium
+	 * @param fsk
+	 *            FSK als Suchkriterium
 	 * @return gibt einen Film zurück
 	 */
 	public List<Film> getFilme(String filmTitel, String fsk) {
@@ -309,21 +302,33 @@ public class DBController {
 		return filmList.get(0);
 	}
 
-	
-
 	/**
 	 * Diese Methode schreibt ein Filmobjekt in die Datenbank
 	 * 
 	 * @return Gibt an ob die Schreiboperation erfolgreich war
 	 */
 	public boolean writeMovie(Film f) {
-		try {			
+		try {
 			this.filmDao.create(f);
 			return true;
-		} catch (SQLException e) {			
+		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Fehler beim Schreibzugriff",
 					"Fehler", JOptionPane.OK_OPTION);
 			return false;
+		}
+	}
+
+	/**
+	 * Diese Methode gibt eine Liste aller Kunden zurück
+	 * 
+	 * @return
+	 */
+	public List<Kunde> getKunden() {
+		try {
+			return this.kundeDao.queryForAll();
+		} catch (Exception e) {
+			System.out.println(e.toString() + " Fehler beim laden der Kunden");
+			return null;
 		}
 	}
 

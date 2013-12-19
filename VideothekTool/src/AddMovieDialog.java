@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -38,7 +37,7 @@ public class AddMovieDialog extends JDialog {
 	private Film f = null;
 	private JButton btnFilmHinzufgen = new JButton("Film hinzuf\u00FCgen");
 	private int filmID = 0;
-	private DBController db;// = new FilmDB();
+	private DBController db;
 	Map<Integer, String> genre;
 
 	/**
