@@ -11,7 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "Film_Stammdaten")
 public class Film {
-	@DatabaseField(id = true)
+	@DatabaseField
 	protected String titel;
 	@DatabaseField
 	protected int jahr;

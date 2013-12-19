@@ -335,11 +335,11 @@ public class DBController {
 	 * @return Gibt an ob die Schreiboperation erfolgreich war
 	 */
 	public boolean writeMovie(Film f) {
-		try {
-			this.filmDao.createOrUpdate(f);
+		try {			
+			this.filmDao.create(f);
 			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException e) {			
+			System.out.println(e.toString()+": Schreibfehler");
 			return false;
 		}
 	}

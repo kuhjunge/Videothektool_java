@@ -35,6 +35,11 @@ import javax.swing.JScrollPane;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
  * @author Simon Krause
@@ -53,10 +58,7 @@ public class VideothekFrame extends JFrame {
 	private JButton btnFilmeSuchen;
 	private JTextField textField;
 	private JComboBox<String> comboBox;
-	private JButton btnNewButton;
-	private JButton btnNewButton_1;
 	private Component horizontalGlue_1;
-	private JButton btnNewButton_2;
 	private JScrollPane scrollPane;
 	private JTable table;
 	private UnpaidInvoiceDialog unpaidInvoiceDialog;
@@ -65,6 +67,27 @@ public class VideothekFrame extends JFrame {
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
+	private JMenuBar menuBar;
+	private JMenu mnDatei;
+	private JMenu mnEinstellungen;
+	private JMenuItem mntmNewMenuItem;
+	private JMenu mnKunden;
+	private JMenuItem mntmNewMenuItem_2;
+	private JMenuItem mntmNewMenuItem_3;
+	private JMenu mnBeenden;
+	private JMenu mnWarenkorb;
+	private JMenuItem mntmNewMenuItem_4;
+	private JMenuItem mntmNewMenuItem_5;
+	private JMenuItem menuItem_1;
+	private JCheckBoxMenuItem chckbxmntmFilialleitung;
+	private JMenuItem mntmNewMenuItem_6;
+	private JMenuItem mntmNewMenuItem_7;
+	private JMenuItem mntmBeenden;
+	private JMenuItem mntmAlteRechnungen;
+	private JPopupMenu popupMenu;
+	private JMenuItem mntmFilmbestandndern_1;
+	private JMenuItem mntmFilmdetailsndern;
+	private JMenuItem mntmInWarenkorb;
 
 	/**
 	 * Launch the application.
@@ -109,6 +132,68 @@ public class VideothekFrame extends JFrame {
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 349);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnBeenden = new JMenu("Datei");
+		menuBar.add(mnBeenden);
+		
+		mntmNewMenuItem_6 = new JMenuItem("Ausloggen");
+		mnBeenden.add(mntmNewMenuItem_6);
+		
+		mntmNewMenuItem_7 = new JMenuItem("");
+		mntmNewMenuItem_7.setEnabled(false);
+		mnBeenden.add(mntmNewMenuItem_7);
+		
+		mntmBeenden = new JMenuItem("Beenden");
+		mntmBeenden.addActionListener(new ActionListener() {
+			/**
+			 * Anwendung beenden und schließen der DB-Connection
+			 */
+			public void actionPerformed(ActionEvent arg0) {
+				db.close();
+				System.exit(0);
+			}
+		});
+		mnBeenden.add(mntmBeenden);
+		
+		mnWarenkorb = new JMenu("Warenkorb");
+		menuBar.add(mnWarenkorb);
+		
+		mntmNewMenuItem_4 = new JMenuItem("Anzeigen");
+		mnWarenkorb.add(mntmNewMenuItem_4);
+		
+		menuItem_1 = new JMenuItem("");
+		menuItem_1.setEnabled(false);
+		mnWarenkorb.add(menuItem_1);
+		
+		mntmNewMenuItem_5 = new JMenuItem("Bezahlen");
+		mnWarenkorb.add(mntmNewMenuItem_5);
+		
+		mnDatei = new JMenu("Filme");
+		menuBar.add(mnDatei);
+		
+		mntmNewMenuItem = new JMenuItem("Neuen Film hinzuf\u00FCgen");
+		mnDatei.add(mntmNewMenuItem);
+		
+		mnKunden = new JMenu("Kunden");
+		menuBar.add(mnKunden);
+		
+		mntmNewMenuItem_2 = new JMenuItem("Kunden hinzuf\u00FCgen");
+		mnKunden.add(mntmNewMenuItem_2);
+		
+		mntmNewMenuItem_3 = new JMenuItem("Kundendaten \u00E4ndern");
+		mnKunden.add(mntmNewMenuItem_3);
+		
+		mntmAlteRechnungen = new JMenuItem("alte Rechnungen");
+		mnKunden.add(mntmAlteRechnungen);
+		
+		mnEinstellungen = new JMenu("Einstellungen");
+		menuBar.add(mnEinstellungen);
+		
+		chckbxmntmFilialleitung = new JCheckBoxMenuItem("Filialleitung");
+		mnEinstellungen.add(chckbxmntmFilialleitung);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -117,46 +202,6 @@ public class VideothekFrame extends JFrame {
 		panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
 		panel.setLayout(new GridLayout(1, 2, 0, 0));
-
-		btnNewButton = new JButton("Neuen Film hinzuf\u00FCgen");
-		btnNewButton.addActionListener(new ActionListener() {
-			/**
-			 * Es wird der Dialog aufgerufen, in dem man neue Filme hinzufügen
-			 * kann
-			 */
-			public void actionPerformed(ActionEvent arg0) {
-				addMovieDialog.clear();
-				addMovieDialog.setVisible(true);
-			}
-		});
-		btnNewButton.setToolTipText("Neuen Film hinzuf\u00FCgen");
-		panel.add(btnNewButton);
-
-		btnNewButton_1 = new JButton("Offene Rechnungen zeigen");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			/**
-			 * Ruft den UnpaidInvoiceDialog auf
-			 */
-			public void actionPerformed(ActionEvent arg0) {
-				unpaidInvoiceDialog.setValue((String) db.unpaidInvoice());
-				unpaidInvoiceDialog.setVisible(true);
-			}
-		});
-		btnNewButton_1.setToolTipText("Offene Rechnungen anzeigen");
-		panel.add(btnNewButton_1);
-
-		btnNewButton_2 = new JButton("Beenden");
-		btnNewButton_2.setToolTipText("Anwendung beenden");
-		btnNewButton_2.addActionListener(new ActionListener() {
-			/**
-			 * Die Anwendung wird geschlossen
-			 */
-			public void actionPerformed(ActionEvent arg0) {
-				db.close();
-				System.exit(0);
-			}
-		});
-		panel.add(btnNewButton_2);
 
 		panel_2 = new JPanel();
 		contentPane.add(panel_2, BorderLayout.CENTER);
@@ -178,6 +223,18 @@ public class VideothekFrame extends JFrame {
 			}
 		});
 		updateTable(0);
+		
+		popupMenu = new JPopupMenu();
+		addPopup(scrollPane, popupMenu);
+		
+		mntmInWarenkorb = new JMenuItem("in Warenkorb");
+		popupMenu.add(mntmInWarenkorb);
+		
+		mntmFilmbestandndern_1 = new JMenuItem("Filmbestand \u00E4ndern");
+		popupMenu.add(mntmFilmbestandndern_1);
+		
+		mntmFilmdetailsndern = new JMenuItem("Filmdetails \u00E4ndern");
+		popupMenu.add(mntmFilmdetailsndern);
 
 		scrollPane.setViewportView(table);
 
@@ -292,4 +349,21 @@ public class VideothekFrame extends JFrame {
 		}
 	}
 
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
 }

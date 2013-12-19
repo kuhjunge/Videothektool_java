@@ -11,7 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "Filmbestand")
 public class FilmBestand {
-	@DatabaseField(id = true)
+	@DatabaseField//(id = true)
 	protected int idFilm;
 	@DatabaseField
 	protected String titel;

@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -100,6 +101,7 @@ public class AddMovieDialog extends JDialog {
 		{
 
 			btnFilmHinzufgen.addActionListener(new ActionListener() {
+				@SuppressWarnings("deprecation")
 				public void actionPerformed(ActionEvent e) {
 					try {
 						int genreid = 1;
