@@ -339,7 +339,8 @@ public class DBController {
 			this.filmDao.create(f);
 			return true;
 		} catch (SQLException e) {			
-			System.out.println(e.toString()+": Schreibfehler");
+			JOptionPane.showMessageDialog(null, "Fehler beim Schreibzugriff",
+					"Fehler", JOptionPane.OK_OPTION);
 			return false;
 		}
 	}
