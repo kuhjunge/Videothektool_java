@@ -43,6 +43,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.JSeparator;
 
 /**
  * @author Simon Krause
@@ -63,7 +64,14 @@ public class VideothekFrame extends JFrame {
 	private Component horizontalGlue_1;
 	private JScrollPane scrollPane;
 	private JTable table;
+	/**
+	 * AddMovieDialog
+	 */
 	private AddMovieDialog addMovieDialog;
+	/**
+	 * AddKundeDialog
+	 */
+	private AddKundeDialog addKundeDialog;
 	/**
 	 * Die FilmDatenbank
 	 */
@@ -75,22 +83,20 @@ public class VideothekFrame extends JFrame {
 	private JMenuItem mntmNewMenuItem;
 	private JMenu mnKunden;
 	private JMenuItem mntmNewMenuItem_2;
-	private JMenuItem mntmNewMenuItem_3;
 	private JMenu mnDatei;
 	private JMenu mnWarenkorb;
 	private JMenuItem mntmNewMenuItem_4;
 	private JMenuItem mntmNewMenuItem_5;
-	private JMenuItem menuItem_1;
 	private JCheckBoxMenuItem chckbxmntmFilialleitung;
 	private JMenuItem mntmNewMenuItem_6;
-	private JMenuItem mntmNewMenuItem_7;
 	private JMenuItem mntmBeenden;
-	private JMenuItem mntmAlteRechnungen;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmFilmbestandndern_1;
 	private JMenuItem mntmFilmdetailsndern;
 	private JMenuItem mntmInWarenkorb;
 	private JMenuItem mntmReservieren;
+	private JSeparator separator;
+	private JSeparator separator_1;
 
 	/**
 	 * Launch the application.
@@ -133,9 +139,14 @@ public class VideothekFrame extends JFrame {
 			db.close();
 			System.exit(0);
 		}		
-						
+		
+		//Initialisierung der Dialoge
 		this.addMovieDialog = new AddMovieDialog(this, db);
 		this.addMovieDialog.setModal(true);
+		
+		this.addKundeDialog = new AddKundeDialog(db);
+		this.addKundeDialog.setModal(true);
+		
 
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,10 +161,6 @@ public class VideothekFrame extends JFrame {
 		mntmNewMenuItem_6 = new JMenuItem("Ausloggen");
 		mnDatei.add(mntmNewMenuItem_6);
 		
-		mntmNewMenuItem_7 = new JMenuItem("");
-		mntmNewMenuItem_7.setEnabled(false);
-		mnDatei.add(mntmNewMenuItem_7);
-		
 		mntmBeenden = new JMenuItem("Beenden");
 		mntmBeenden.addActionListener(new ActionListener() {
 			/**
@@ -164,6 +171,9 @@ public class VideothekFrame extends JFrame {
 				System.exit(0);
 			}
 		});
+		
+		separator_1 = new JSeparator();
+		mnDatei.add(separator_1);
 		mnDatei.add(mntmBeenden);
 		
 		mnWarenkorb = new JMenu("Warenkorb");
@@ -172,9 +182,8 @@ public class VideothekFrame extends JFrame {
 		mntmNewMenuItem_4 = new JMenuItem("Anzeigen");
 		mnWarenkorb.add(mntmNewMenuItem_4);
 		
-		menuItem_1 = new JMenuItem("");
-		menuItem_1.setEnabled(false);
-		mnWarenkorb.add(menuItem_1);
+		separator = new JSeparator();
+		mnWarenkorb.add(separator);
 		
 		mntmNewMenuItem_5 = new JMenuItem("Bezahlen");
 		mnWarenkorb.add(mntmNewMenuItem_5);
@@ -198,14 +207,17 @@ public class VideothekFrame extends JFrame {
 		mnKunden = new JMenu("Kunden");
 		menuBar.add(mnKunden);
 		
-		mntmNewMenuItem_2 = new JMenuItem("Kunden hinzuf\u00FCgen");
+		mntmNewMenuItem_2 = new JMenuItem("Kunde hinzuf\u00FCgen/\u00E4ndern");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			/**
+			 * Aufruf des addKundeDialogs
+			 */
+			public void actionPerformed(ActionEvent e) {
+				addKundeDialog.setLocationRelativeTo(getParent());
+				addKundeDialog.setVisible(true);
+			}
+		});
 		mnKunden.add(mntmNewMenuItem_2);
-		
-		mntmNewMenuItem_3 = new JMenuItem("Kundendaten \u00E4ndern");
-		mnKunden.add(mntmNewMenuItem_3);
-		
-		mntmAlteRechnungen = new JMenuItem("alte Rechnungen");
-		mnKunden.add(mntmAlteRechnungen);
 		
 		mnEinstellungen = new JMenu("Einstellungen");
 		menuBar.add(mnEinstellungen);
