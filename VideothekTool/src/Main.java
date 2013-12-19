@@ -32,11 +32,15 @@ public class Main extends JFrame {
 		// LoginScreen.openLoginScreen(null);
 		LoginScreen wle = new LoginScreen();
 		wle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		wle.setLocationRelativeTo(null);//positioniert in Bildschirmmitte
 		wle.setVisible(true);
 		wle.addWindowListener(new WindowListener() {
 			public void windowClosed(WindowEvent arg0) {
 				System.out.println("Window close event occur");
-				VideothekFrame.openVideothek(null);
+				
+				VideothekFrame video = new VideothekFrame();
+				video.setLocationRelativeTo(null);
+				video.setVisible(true);
 			}
 
 			public void windowActivated(WindowEvent arg0) {

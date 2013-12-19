@@ -114,8 +114,13 @@ public class DBController {
 		}
 	}
 
+	/**
+	 * Methode überprüft, ob Filialleiter-Rechte vorhanden sind
+	 * @return 1 für Mitarbeiter, 2 für Filialleitung
+	 */
 	public int checkright() {
-		int recht = 3;
+		//TODO Bitte zu ändern!!!!
+		/*int recht = 3;
 		try {
 			if (this.genreDao.queryForAll() != null) {
 				System.out.println("Adminrechte");
@@ -137,7 +142,8 @@ public class DBController {
 		} catch (SQLException e) {
 			recht = 0;
 		}
-		return recht;
+		//return recht;*/
+		return 2;
 	}
 
 	public boolean isDBOnline() {

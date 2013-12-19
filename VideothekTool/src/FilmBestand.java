@@ -7,11 +7,11 @@ import com.j256.ormlite.table.DatabaseTable;
  * Diese Klasse repräsentiert den View Filmbestand
  * 
  * @author Simon Krause
- * @version 1.0
+ * @version 1.1
  */
 @DatabaseTable(tableName = "Filmbestand")
 public class FilmBestand {
-	@DatabaseField//(id = true)
+	@DatabaseField
 	protected int idFilm;
 	@DatabaseField
 	protected String titel;

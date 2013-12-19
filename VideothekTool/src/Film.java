@@ -3,7 +3,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
- * Diese Klasse repräsentiert die Entität Film der DB
+ * Diese Klasse repräsentiert den View Film_Stammdaten
  * 
  * @author Simon Krause, Chris Deter
  * @version 1.1

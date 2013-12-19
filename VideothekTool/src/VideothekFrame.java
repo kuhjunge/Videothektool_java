@@ -55,7 +55,6 @@ public class VideothekFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 627881990149564418L;
 	private JPanel contentPane;
-	private JPanel panel;
 	private JPanel panel_2;
 	private JPanel panel_1;
 	private JButton btnFilmeSuchen;
@@ -69,6 +68,7 @@ public class VideothekFrame extends JFrame {
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
+	
 	private JMenuBar menuBar;
 	private JMenu mnFilme;
 	private JMenu mnEinstellungen;
@@ -95,6 +95,7 @@ public class VideothekFrame extends JFrame {
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void openVideothek(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -106,12 +107,12 @@ public class VideothekFrame extends JFrame {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the frame. Es wird eine neue Verbindung zur Datenbank aufgebaut
 	 */
-	public VideothekFrame() {
+	public VideothekFrame() {		
 		addWindowListener(new WindowAdapter() {
 			/**
 			 * Die DB wird beim Schließen wieder geschlossen
@@ -121,14 +122,20 @@ public class VideothekFrame extends JFrame {
 				db.close();
 			}
 		});
+		
+		//neuer DBController
 		this.db = new DBController();
+		
+		//Versuche zu verbinden
 		try {
 			db.connect();
 		} catch (SQLException e) {
 			db.close();
 			System.exit(0);
 		}		
+						
 		this.addMovieDialog = new AddMovieDialog(this, db);
+		this.addMovieDialog.setModal(true);
 
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -177,6 +184,15 @@ public class VideothekFrame extends JFrame {
 		menuBar.add(mnFilme);
 		
 		mntmNewMenuItem = new JMenuItem("Neuen Film hinzuf\u00FCgen");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			/**
+			 * Neuen Film hinzufügen
+			 */
+			public void actionPerformed(ActionEvent e) {
+				addMovieDialog.setLocationRelativeTo(getParent());
+				addMovieDialog.setVisible(true);
+			}
+		});
 		mnFilme.add(mntmNewMenuItem);
 		
 		mnKunden = new JMenu("Kunden");
@@ -218,10 +234,6 @@ public class VideothekFrame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-
-		panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
-		panel.setLayout(new GridLayout(1, 2, 0, 0));
 
 		panel_2 = new JPanel();
 		contentPane.add(panel_2, BorderLayout.CENTER);
@@ -278,6 +290,7 @@ public class VideothekFrame extends JFrame {
 				if(table.getSelectedRow() >= 0){
 					addMovieDialog.setFilm(db.getFilm((String) table.getValueAt(
 						table.getSelectedRow(), 0)));
+					addMovieDialog.setLocationRelativeTo(getParent());
 					addMovieDialog.setVisible(true);
 				}
 			}
@@ -291,6 +304,14 @@ public class VideothekFrame extends JFrame {
 		contentPane.add(panel_1, BorderLayout.SOUTH);
 		panel_1.setLayout(new GridLayout(0, 2, 0, 0));
 
+		//Überprüfung, ob Filialleiter-Rechte vergeben sind
+		if(db.checkright() == 2){
+			chckbxmntmFilialleitung.setEnabled(true);
+		}
+		else{
+			chckbxmntmFilialleitung.setEnabled(false);
+		}
+		
 		btnFilmeSuchen = new JButton("Film/e suchen");
 		btnFilmeSuchen.setToolTipText("Film suchen");
 		btnFilmeSuchen.addActionListener(new ActionListener() {
