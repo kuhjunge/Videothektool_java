@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import com.j256.ormlite.dao.*;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -59,10 +61,7 @@ public class DBController {
 	 */
 	private Dao<Genre, String> genreDao;
 	
-	/**
-	 * Dao für View offeneRechnungen
-	 */
-	private Dao<unPaidInvoice, String> unpaidDao;
+	
 
 	/**
 	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
@@ -102,8 +101,7 @@ public class DBController {
 				.createDao(this.connectionSource, Genre.class);
 		this.bestandDao = DaoManager.createDao(this.connectionSource,
 				FilmBestand.class);
-		this.unpaidDao = DaoManager.createDao(this.connectionSource, unPaidInvoice.class);
-
+		
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
 		globalright = checkright();
@@ -305,29 +303,7 @@ public class DBController {
 		return filmList.get(0);
 	}
 
-	/**
-	 * Diese Methode ruft die StoredProcedure "UnpaidInvoice" auf.
-	 * 
-	 * @return Gibt einen String aller offenen Rechnungen zurück
-	 */
-	public String unpaidInvoice() {
-		String str = "";
-		try {			
-			List<unPaidInvoice> list = unpaidDao.queryForAll();
-			str += "RechnungsDatum\tNachname\t\tVorname\t\tBetrag\t\tTelefonNummer\tEmail\n";
-			for(unPaidInvoice obj : list){
-				str += obj.getRechnung_vom()+"\t\t"
-					+  obj.getNachname()+"\t\t"
-					+  obj.getVorname()+"\t\t"
-					+  obj.getRechnungsBetrag()+"\t\t"
-					+  obj.getTelefonnummer()+"\t\t"
-					+  obj.getEmail()+"\n";
-			}
-		} catch (Exception e) {
-			System.out.println(e.toString());
-		}
-		return str;
-	}
+	
 
 	/**
 	 * Diese Methode schreibt ein Filmobjekt in die Datenbank

@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,7 +24,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -35,11 +35,14 @@ import javax.swing.JScrollPane;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 /**
  * @author Simon Krause
@@ -61,20 +64,19 @@ public class VideothekFrame extends JFrame {
 	private Component horizontalGlue_1;
 	private JScrollPane scrollPane;
 	private JTable table;
-	private UnpaidInvoiceDialog unpaidInvoiceDialog;
 	private AddMovieDialog addMovieDialog;
 	/**
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
 	private JMenuBar menuBar;
-	private JMenu mnDatei;
+	private JMenu mnFilme;
 	private JMenu mnEinstellungen;
 	private JMenuItem mntmNewMenuItem;
 	private JMenu mnKunden;
 	private JMenuItem mntmNewMenuItem_2;
 	private JMenuItem mntmNewMenuItem_3;
-	private JMenu mnBeenden;
+	private JMenu mnDatei;
 	private JMenu mnWarenkorb;
 	private JMenuItem mntmNewMenuItem_4;
 	private JMenuItem mntmNewMenuItem_5;
@@ -88,6 +90,7 @@ public class VideothekFrame extends JFrame {
 	private JMenuItem mntmFilmbestandndern_1;
 	private JMenuItem mntmFilmdetailsndern;
 	private JMenuItem mntmInWarenkorb;
+	private JMenuItem mntmReservieren;
 
 	/**
 	 * Launch the application.
@@ -124,9 +127,7 @@ public class VideothekFrame extends JFrame {
 		} catch (SQLException e) {
 			db.close();
 			System.exit(0);
-		}
-		this.unpaidInvoiceDialog = new UnpaidInvoiceDialog(this,
-				"Offene Rechnungen", true);
+		}		
 		this.addMovieDialog = new AddMovieDialog(this, db);
 
 		setTitle("Videothek Manager");
@@ -136,15 +137,15 @@ public class VideothekFrame extends JFrame {
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		mnBeenden = new JMenu("Datei");
-		menuBar.add(mnBeenden);
+		mnDatei = new JMenu("Datei");
+		menuBar.add(mnDatei);
 		
 		mntmNewMenuItem_6 = new JMenuItem("Ausloggen");
-		mnBeenden.add(mntmNewMenuItem_6);
+		mnDatei.add(mntmNewMenuItem_6);
 		
 		mntmNewMenuItem_7 = new JMenuItem("");
 		mntmNewMenuItem_7.setEnabled(false);
-		mnBeenden.add(mntmNewMenuItem_7);
+		mnDatei.add(mntmNewMenuItem_7);
 		
 		mntmBeenden = new JMenuItem("Beenden");
 		mntmBeenden.addActionListener(new ActionListener() {
@@ -156,7 +157,7 @@ public class VideothekFrame extends JFrame {
 				System.exit(0);
 			}
 		});
-		mnBeenden.add(mntmBeenden);
+		mnDatei.add(mntmBeenden);
 		
 		mnWarenkorb = new JMenu("Warenkorb");
 		menuBar.add(mnWarenkorb);
@@ -171,11 +172,12 @@ public class VideothekFrame extends JFrame {
 		mntmNewMenuItem_5 = new JMenuItem("Bezahlen");
 		mnWarenkorb.add(mntmNewMenuItem_5);
 		
-		mnDatei = new JMenu("Filme");
-		menuBar.add(mnDatei);
+		mnFilme = new JMenu("Filme");
+		mnFilme.setEnabled(false);
+		menuBar.add(mnFilme);
 		
 		mntmNewMenuItem = new JMenuItem("Neuen Film hinzuf\u00FCgen");
-		mnDatei.add(mntmNewMenuItem);
+		mnFilme.add(mntmNewMenuItem);
 		
 		mnKunden = new JMenu("Kunden");
 		menuBar.add(mnKunden);
@@ -193,6 +195,24 @@ public class VideothekFrame extends JFrame {
 		menuBar.add(mnEinstellungen);
 		
 		chckbxmntmFilialleitung = new JCheckBoxMenuItem("Filialleitung");
+		chckbxmntmFilialleitung.addActionListener(new ActionListener() {
+			/**
+			 * Änderung des Editierstatus zu FilialLeitung oder Mitarbeiter
+			 * geänderte Schreib- und Leserechte
+			 */
+			public void actionPerformed(ActionEvent arg0) {
+				if(chckbxmntmFilialleitung.isSelected() ) {
+					mnFilme.setEnabled(true);
+					mntmFilmbestandndern_1.setEnabled(true);
+					mntmFilmdetailsndern.setEnabled(true);
+				}
+				else{
+					mnFilme.setEnabled(false);
+					mntmFilmbestandndern_1.setEnabled(false);
+					mntmFilmdetailsndern.setEnabled(false);
+				}
+			}
+		});
 		mnEinstellungen.add(chckbxmntmFilialleitung);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -213,27 +233,56 @@ public class VideothekFrame extends JFrame {
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			/**
-			 * Es wird der FilmInfoDialog für einen ausgewählten Film aufgerufen
+			 * Aufruf des popupMenu
 			 */
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				addMovieDialog.setFilm(db.getFilm((String) table.getValueAt(
-						table.getSelectedRow(), 0)));
-				addMovieDialog.setVisible(true);
+			public void mouseClicked(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupMenu.setVisible(true);
+				}
+			}
+			/**
+			 * Markiert die Zeile bei click einer Maustaste
+			 */
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// selects the row at which point the mouse is clicked
+				Point point = e.getPoint();
+				int currentRow = table.rowAtPoint(point);
+				if(currentRow >= 0 && currentRow <= table.getRowCount()){
+					table.setRowSelectionInterval(currentRow, currentRow);					
+				}
 			}
 		});
 		updateTable(0);
 		
 		popupMenu = new JPopupMenu();
-		addPopup(scrollPane, popupMenu);
+		table.setComponentPopupMenu(popupMenu);
 		
 		mntmInWarenkorb = new JMenuItem("in Warenkorb");
 		popupMenu.add(mntmInWarenkorb);
 		
+		mntmReservieren = new JMenuItem("Reservieren");
+		popupMenu.add(mntmReservieren);
+		
 		mntmFilmbestandndern_1 = new JMenuItem("Filmbestand \u00E4ndern");
+		mntmFilmbestandndern_1.setEnabled(false);
 		popupMenu.add(mntmFilmbestandndern_1);
 		
 		mntmFilmdetailsndern = new JMenuItem("Filmdetails \u00E4ndern");
+		mntmFilmdetailsndern.addActionListener(new ActionListener() {
+			/**
+			 * Ändern der FilmDetails
+			 */
+			public void actionPerformed(ActionEvent e) {
+				if(table.getSelectedRow() >= 0){
+					addMovieDialog.setFilm(db.getFilm((String) table.getValueAt(
+						table.getSelectedRow(), 0)));
+					addMovieDialog.setVisible(true);
+				}
+			}
+		});
+		mntmFilmdetailsndern.setEnabled(false);
 		popupMenu.add(mntmFilmdetailsndern);
 
 		scrollPane.setViewportView(table);
@@ -298,17 +347,7 @@ public class VideothekFrame extends JFrame {
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {
 				"FSK  0 Jahre", "FSK  6 Jahre", "FSK 12 Jahre", "FSK 16 Jahre",
 				"FSK 18 Jahre" }));
-		panel_1.add(comboBox);
-		/*
-		 * contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray( new
-		 * Component[] { panel_1, panel, btnFilmeSuchen, btnNewButton,
-		 * btnNewButton_1, btnNewButton_2, horizontalGlue, panel_2,
-		 * horizontalGlue_1, comboBox, textField }));
-		 * setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[] {
-		 * btnFilmeSuchen, btnNewButton, btnNewButton_1, btnNewButton_2,
-		 * panel_2, horizontalGlue, textField, horizontalGlue_1, comboBox,
-		 * panel_1, panel, contentPane }));
-		 */
+		panel_1.add(comboBox);	
 
 	}
 
@@ -349,21 +388,5 @@ public class VideothekFrame extends JFrame {
 		}
 	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
-	}
+	
 }
