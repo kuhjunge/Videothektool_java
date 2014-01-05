@@ -10,8 +10,8 @@ import com.j256.ormlite.table.DatabaseTable;
  * @version 1.1
  */
 @DatabaseTable(tableName = "Filmbestand")
-public class FilmBestand {
-	@DatabaseField
+public class FilmExemplar {
+	@DatabaseField(generatedId = true)
 	protected int idFilm;
 	@DatabaseField
 	protected String titel;
@@ -39,7 +39,7 @@ public class FilmBestand {
 	/**
 	 * Default-Konstruktor
 	 */
-	public FilmBestand() {
+	public FilmExemplar() {
 
 	}
 

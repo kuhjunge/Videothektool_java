@@ -12,6 +12,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "Kundendaten")
 public class Kunde {
 	
+	@DatabaseField(generatedId = true)
+	private int idKunde;
 	@DatabaseField
 	private String nachname;
 	@DatabaseField

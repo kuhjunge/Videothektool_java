@@ -53,7 +53,7 @@ public class DBController {
 	/**
 	 * Dao für View Filmbestand
 	 */
-	private Dao<FilmBestand, String> bestandDao;
+	private Dao<FilmExemplar, String> bestandDao;
 
 	/**
 	 * Dao für Genre-Entität der DB
@@ -102,7 +102,7 @@ public class DBController {
 		this.genreDao = DaoManager
 				.createDao(this.connectionSource, Genre.class);
 		this.bestandDao = DaoManager.createDao(this.connectionSource,
-				FilmBestand.class);
+				FilmExemplar.class);
 		this.kundeDao = DaoManager
 				.createDao(this.connectionSource, Kunde.class);
 
@@ -217,13 +217,13 @@ public class DBController {
 	public int getAnzahlDVD(String filmTitel) {
 		int value = 0;
 		try {
-			QueryBuilder<FilmBestand, String> queryBuilder = bestandDao
+			QueryBuilder<FilmExemplar, String> queryBuilder = bestandDao
 					.queryBuilder();
 			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
 					.like("medium", "DVD");
 
-			PreparedQuery<FilmBestand> preparedQuery = queryBuilder.prepare();
-			List<FilmBestand> filmList = bestandDao.query(preparedQuery);
+			PreparedQuery<FilmExemplar> preparedQuery = queryBuilder.prepare();
+			List<FilmExemplar> filmList = bestandDao.query(preparedQuery);
 			value = filmList.size();
 		} catch (Exception e) {
 			System.out.println(e.toString());
@@ -242,13 +242,13 @@ public class DBController {
 	public int getAnzahlBluRay(String filmTitel) {
 		int value = 0;
 		try {
-			QueryBuilder<FilmBestand, String> queryBuilder = bestandDao
+			QueryBuilder<FilmExemplar, String> queryBuilder = bestandDao
 					.queryBuilder();
 			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
 					.like("medium", "Blu%");
 
-			PreparedQuery<FilmBestand> preparedQuery = queryBuilder.prepare();
-			List<FilmBestand> filmList = bestandDao.query(preparedQuery);
+			PreparedQuery<FilmExemplar> preparedQuery = queryBuilder.prepare();
+			List<FilmExemplar> filmList = bestandDao.query(preparedQuery);
 			value = filmList.size();
 		} catch (Exception e) {
 			System.out.println(e.toString());
