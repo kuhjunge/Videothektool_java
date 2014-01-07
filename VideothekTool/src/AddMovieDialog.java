@@ -86,6 +86,8 @@ public class AddMovieDialog extends JDialog {
 	 * @param videothekFrame
 	 */
 	public AddMovieDialog(JFrame frame, DBController dbi) {
+		setResizable(false);
+		setModal(true);
 		setTitle("Filmmanager");
 		db = dbi;
 		genre = db.getGenre();		

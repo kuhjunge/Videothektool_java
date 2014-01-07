@@ -1,4 +1,5 @@
-import java.util.Date;
+import java.sql.Date;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -11,32 +12,35 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "Film_Stammdaten")
 public class Film {
+	@DatabaseField(generatedId = true)
+	protected int idFilm;
 	@DatabaseField
-	protected String titel;
+	private String titel;
 	@DatabaseField
-	protected int jahr;
+	private int jahr;
 	@DatabaseField
-	protected int laufzeit;
+	private int laufzeit;
 	@DatabaseField
-	protected double imdb_Wertung;
+	private double imdb_Wertung;
 	@DatabaseField
-	protected String plot;
+	private String plot;
 	@DatabaseField
-	protected int fsk;
+	private int fsk;
 	@DatabaseField
-	protected double grundpreis;
+	private double grundpreis;
 	@DatabaseField
-	protected double neuheiten_Zuschlag;
+	private double neuheiten_Zuschlag;
 	@DatabaseField
-	protected Date neu_Bis;
+	private Date neu_Bis;
 	@DatabaseField
-	protected Integer genre_ref;
-
+	private int genre_ref;
+	
+	
 	/**
-	 * default Konstruktor
+	 * Default-Konstruktor
 	 */
-	public Film() {
-
+	public Film(){
+		
 	}
 
 	/**
@@ -45,8 +49,7 @@ public class Film {
 	 */
 	public Film(String titel, int jahr, int laufzeit,
 			double imdbWertung, String plot, int fsk, double grundpreis,
-			double neuheitenZuschlag, Integer genre_ref) {
-		super();		
+			double neuheitenZuschlag, Integer genre_ref) {				
 		this.titel = titel;
 		this.jahr = jahr;
 		this.laufzeit = laufzeit;
@@ -56,13 +59,24 @@ public class Film {
 		this.grundpreis = grundpreis;
 		this.neuheiten_Zuschlag = neuheitenZuschlag;
 		this.neu_Bis = null;
-		this.genre_ref = genre_ref;
+		this.genre_ref = genre_ref;		
 	}
-
+	
+	/**
+	 * @return Titel
+	 */
 	public String getTitel() {
 		return this.titel;
 	}
 
+	/**
+	 * 
+	 * @return idFilm
+	 */
+	public int getIdFilm(){
+		return this.idFilm;
+	}
+		
 	
 	/**
 	 * @return the id

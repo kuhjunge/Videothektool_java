@@ -1,5 +1,3 @@
-import java.util.Date;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -10,31 +8,14 @@ import com.j256.ormlite.table.DatabaseTable;
  * @version 1.1
  */
 @DatabaseTable(tableName = "Filmbestand")
-public class FilmExemplar {
+public class FilmExemplar {	
+	
 	@DatabaseField(generatedId = true)
-	protected int idFilm;
+	private int idExemplar;
 	@DatabaseField
-	protected String titel;
+	private int film_Ref;
 	@DatabaseField
-	protected int jahr;
-	@DatabaseField
-	protected int laufzeit;
-	@DatabaseField
-	protected double imdb_Wertung;
-	@DatabaseField
-	protected String plot;
-	@DatabaseField
-	protected int fsk;
-	@DatabaseField
-	protected double grundpreis;
-	@DatabaseField
-	protected double neuheiten_Zuschlag;
-	@DatabaseField
-	protected Date neu_Bis;
-	@DatabaseField
-	protected String genre;
-	@DatabaseField
-	protected String medium;
+	private int medium_Ref;	
 
 	/**
 	 * Default-Konstruktor
@@ -43,4 +24,22 @@ public class FilmExemplar {
 
 	}
 
+	/**
+	 * @return the film_Ref
+	 */
+	public int getFilm_Ref() {
+		return film_Ref;
+	}
+
+	/**
+	 * @return the medium_Ref
+	 */
+	public int getMedium_Ref() {
+		return medium_Ref;
+	}
+
+	
+	
+
+	
 }

@@ -44,6 +44,8 @@ public class AddKundeDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public AddKundeDialog(DBController db) {
+		setModal(true);
+		setResizable(false);
 		setTitle("Kunden");
 
 		this.db = db;

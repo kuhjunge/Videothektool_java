@@ -25,7 +25,7 @@ public class Verliehen {
 	@DatabaseField
 	private int rechnungs_Ref;
 	@DatabaseField
-	private int filmExemplar_Ref;
+	private int medienExemplar_Ref;
 	
 	/**
 	 * Default-Konstruktor

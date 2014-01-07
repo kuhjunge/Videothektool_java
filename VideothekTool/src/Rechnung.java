@@ -15,7 +15,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "Rechnung_view")
 public class Rechnung {
-/*CREATE VIEW Rechnung_view AS SELECT idRechnung, Betrag, Bezahl_Datum, Kunde_Ref from Rechnung;*/
+	
 	@DatabaseField(generatedId = true)
 	private int idRechnung;
 	@DatabaseField

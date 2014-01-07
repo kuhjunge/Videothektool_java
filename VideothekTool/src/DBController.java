@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,10 @@ import com.j256.ormlite.support.ConnectionSource;
  * 
  */
 public class DBController {
-
+	
+	private final int DVD = 1;
+	private final int BLURAY = 2;
+	
 	private int globalright = 3;
 	/**
 	 * User, der sich in der DB anmeldet
@@ -64,6 +68,11 @@ public class DBController {
 	 * Dao für View Kundendaten
 	 */
 	private Dao<Kunde, String> kundeDao;
+	
+	/**
+	 * Dao für View Verliehen
+	 */
+	private Dao<Verliehen, String> verliehenDao;
 
 	/**
 	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
@@ -105,6 +114,7 @@ public class DBController {
 				FilmExemplar.class);
 		this.kundeDao = DaoManager
 				.createDao(this.connectionSource, Kunde.class);
+		this.verliehenDao = DaoManager.createDao(this.connectionSource, Verliehen.class);
 
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
@@ -116,6 +126,7 @@ public class DBController {
 		} else {
 			// alles andere TODO: Schreibrechte für View richtig abprüfen
 		}
+				
 	}
 
 	/**
@@ -140,7 +151,7 @@ public class DBController {
 	}
 
 	public boolean isDBOnline() {
-		try {
+		try {//TODO überprüfen, ob diese Methode gebraucht wird
 			return this.filmDao.isTableExists();
 		} catch (SQLException e) {
 			return false;
@@ -181,7 +192,7 @@ public class DBController {
 	}
 
 	/**
-	 * Holt einen Film aus der Datenbank mit FilmTitel und fskals Suchkriterium.
+	 * Holt einen Film aus der Datenbank mit FilmTitel und fsk als Suchkriterium.
 	 * 
 	 * @param filmTitel
 	 *            Titel des Films
@@ -214,17 +225,14 @@ public class DBController {
 	 *            zu suchender Film
 	 * @return Rückgabe der Anzahl der Filme als DVD
 	 */
-	public int getAnzahlDVD(String filmTitel) {
+	public int getAnzahlDVD(int idFilm) {
 		int value = 0;
 		try {
-			QueryBuilder<FilmExemplar, String> queryBuilder = bestandDao
-					.queryBuilder();
-			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
-					.like("medium", "DVD");
-
-			PreparedQuery<FilmExemplar> preparedQuery = queryBuilder.prepare();
-			List<FilmExemplar> filmList = bestandDao.query(preparedQuery);
-			value = filmList.size();
+			QueryBuilder<FilmExemplar, String> qB2 = bestandDao.queryBuilder();
+			qB2.where().eq("film_Ref", idFilm)
+				.and().eq("medium_Ref", DVD);
+			List<FilmExemplar> exemplare = bestandDao.query(qB2.prepare());				
+			value = exemplare.size();	
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -239,17 +247,15 @@ public class DBController {
 	 *            zu suchender Film
 	 * @return Rückgabe der Anzahl der Filme als Blu-Rays
 	 */
-	public int getAnzahlBluRay(String filmTitel) {
+	public int getAnzahlBluRay(int idFilm) {
 		int value = 0;
-		try {
-			QueryBuilder<FilmExemplar, String> queryBuilder = bestandDao
-					.queryBuilder();
-			queryBuilder.where().like("titel", "%" + filmTitel + "%").and()
-					.like("medium", "Blu%");
-
-			PreparedQuery<FilmExemplar> preparedQuery = queryBuilder.prepare();
-			List<FilmExemplar> filmList = bestandDao.query(preparedQuery);
-			value = filmList.size();
+		try {			
+			QueryBuilder<FilmExemplar, String> qB2 = bestandDao.queryBuilder();
+			qB2.where().eq("film_Ref", idFilm)
+				.and().eq("medium_Ref", BLURAY);
+			List<FilmExemplar> exemplare = bestandDao.query(qB2.prepare());				
+			value = exemplare.size();				
+			
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -330,6 +336,64 @@ public class DBController {
 			System.out.println(e.toString() + " Fehler beim laden der Kunden");
 			return null;
 		}
+	}
+
+	/**
+	 * Diese Methode gibt die Anzahl alle nicht verliehenen DVD eines Film zurück
+	 * @param idFilm
+	 * @return
+	 */
+	public int getAnzahlDVDPraesent(int idFilm, int bestand) {
+		int value = bestand;
+		try{
+			QueryBuilder<FilmExemplar, String> qB2 = bestandDao.queryBuilder();
+			qB2.where().eq("film_Ref", idFilm)
+				.and().eq("medium_Ref", DVD);
+			List<FilmExemplar> exemplare = bestandDao.query(qB2.prepare());				
+			
+			for(FilmExemplar exemplar : exemplare){
+				QueryBuilder<Verliehen, String> qB = verliehenDao.queryBuilder();
+				qB.where().eq("medienExemplar_Ref", exemplar.getMedium_Ref())
+					.and().isNull("rueckgabeDatum");
+				List<Verliehen> verliehen = verliehenDao.query(qB.prepare());
+				if(verliehen.size() != 0){
+					value--;
+				}
+			}		
+						
+		}catch(Exception e){
+			System.out.println(e.toString());
+		}
+		return value;
+	}
+
+	/**
+	 * Diese Methode gibt die Anzahl alle nicht verliehenen BluRays eines Film zurück
+	 * @param idFilm
+	 * @return
+	 */
+	public int getAnzahlBluRayPraesent(int idFilm, int bestand) {
+		int value = bestand;
+		try{
+			QueryBuilder<FilmExemplar, String> qB2 = bestandDao.queryBuilder();
+			qB2.where().eq("film_Ref", idFilm)
+				.and().eq("medium_Ref", BLURAY);
+			List<FilmExemplar> exemplare = bestandDao.query(qB2.prepare());				
+			
+			for(FilmExemplar exemplar : exemplare){
+				QueryBuilder<Verliehen, String> qB = verliehenDao.queryBuilder();
+				qB.where().eq("medienExemplar_Ref", exemplar.getMedium_Ref())
+					.and().isNull("rueckgabeDatum");
+				List<Verliehen> verliehen = verliehenDao.query(qB.prepare());
+				if(verliehen.size() != 0){
+					value--;
+				}
+			}		
+						
+		}catch(Exception e){
+			System.out.println(e.toString());
+		}
+		return value;
 	}
 
 }

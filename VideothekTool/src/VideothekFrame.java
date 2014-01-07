@@ -14,6 +14,9 @@ import javax.swing.JTextField;
 
 import java.awt.Component;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -70,6 +73,10 @@ public class VideothekFrame extends JFrame {
 	 */
 	private AddKundeDialog addKundeDialog;
 	/**
+	 * WarenkorbDialog
+	 */
+	private WarenkorbDialog warenkorbDialog; 
+	/**
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
@@ -82,8 +89,6 @@ public class VideothekFrame extends JFrame {
 	private JMenuItem mntmNewMenuItem_2;
 	private JMenu mnDatei;
 	private JMenu mnWarenkorb;
-	private JMenuItem mntmNewMenuItem_4;
-	private JMenuItem mntmNewMenuItem_5;
 	private JCheckBoxMenuItem chckbxmntmFilialleitung;
 	private JMenuItem mntmNewMenuItem_6;
 	private JMenuItem mntmBeenden;
@@ -92,9 +97,13 @@ public class VideothekFrame extends JFrame {
 	private JMenuItem mntmFilmdetailsndern;
 	private JMenuItem mntmInWarenkorb;
 	private JMenuItem mntmReservieren;
-	private JSeparator separator;
 	private JSeparator separator_1;
 
+	/**
+	 * der Warenkorb: eine Liste mit Referenzen auf die ausgewählten Filme
+	 */
+	private List<Integer> warenkorb;
+	private JMenuItem mntmWarenkorb;
 	/**
 	 * Launch the application.
 	 */
@@ -144,10 +153,15 @@ public class VideothekFrame extends JFrame {
 		this.addKundeDialog = new AddKundeDialog(db);
 		this.addKundeDialog.setModal(true);
 		
+		this.warenkorbDialog = new WarenkorbDialog();
+		this.warenkorbDialog.setModal(true);		
 
+		//Variableninitialisierung
+		this.warenkorb = new LinkedList<Integer>();
+		//----
 		setTitle("Videothek Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 350);
+		setBounds(100, 100, 699, 360);
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -174,16 +188,20 @@ public class VideothekFrame extends JFrame {
 		mnDatei.add(mntmBeenden);
 		
 		mnWarenkorb = new JMenu("Warenkorb");
+		
 		menuBar.add(mnWarenkorb);
 		
-		mntmNewMenuItem_4 = new JMenuItem("Anzeigen");
-		mnWarenkorb.add(mntmNewMenuItem_4);
-		
-		separator = new JSeparator();
-		mnWarenkorb.add(separator);
-		
-		mntmNewMenuItem_5 = new JMenuItem("Bezahlen");
-		mnWarenkorb.add(mntmNewMenuItem_5);
+		mntmWarenkorb = new JMenuItem("Warenkorb");
+		mntmWarenkorb.addActionListener(new ActionListener() {
+			/**
+			 * WarenkorbDialog wird aufgerufen
+			 */
+			public void actionPerformed(ActionEvent e) {
+				warenkorbDialog.setLocationRelativeTo(getParent());
+				warenkorbDialog.setVisible(true);
+			}
+		});
+		mnWarenkorb.add(mntmWarenkorb);
 		
 		mnFilme = new JMenu("Filme");
 		mnFilme.setEnabled(false);
@@ -304,6 +322,22 @@ public class VideothekFrame extends JFrame {
 				}
 			}
 		});
+		mntmInWarenkorb.addActionListener(new ActionListener() {
+			/**
+			 * Ausgewählten Film zu Warenkorb hinzufügen
+			 */
+			public void actionPerformed(ActionEvent e){
+				int row = db.getFilm( (String)table.getValueAt(table.getSelectedRow(), 0) ).getIdFilm();
+				//Überprüfen, ob schon in Warenkorb vorhanden
+				for(Integer value : warenkorb){
+					if(row == value){
+						return;
+					}
+				}
+				Film film = db.getFilm((String) table.getValueAt(table.getSelectedRow(), 0) );
+				warenkorb.add( film.getIdFilm() );
+			}
+		});
 		mntmFilmdetailsndern.setEnabled(false);
 		popupMenu.add(mntmFilmdetailsndern);
 
@@ -346,19 +380,20 @@ public class VideothekFrame extends JFrame {
 					break;
 				case ("FSK 18 Jahre"):
 					fsk = "18";
-				}
+				}		
+							
 				
-				List<Film> filme = db.getFilme(textField.getText(), fsk);
+				List<Film> filme = db.getFilme(textField.getText(), fsk);				
 				updateTable(filme.size());
 
-				for (int i = 0; i < filme.size(); i++) {
-					table.setValueAt(filme.get(i).getTitel(), i, 0);
-					table.setValueAt(db.getAnzahlDVD(filme.get(i).getTitel()),
-							i, 1);
-					table.setValueAt(
-							db.getAnzahlBluRay(filme.get(i).getTitel()), i, 2);
+				for (int i = 0; i < filme.size(); i++) {					
+					table.setValueAt(filme.get(i).getTitel(), i, 0);					
+					table.setValueAt(db.getAnzahlDVD( filme.get(i).getIdFilm() ), i, 3);					
+					table.setValueAt(db.getAnzahlBluRay( filme.get(i).getIdFilm() ), i, 4);
+					table.setValueAt(db.getAnzahlDVDPraesent( filme.get(i).getIdFilm(), (int)table.getValueAt(i, 3) ), i, 1);
+					table.setValueAt(db.getAnzahlBluRayPraesent( filme.get(i).getIdFilm(), (int) table.getValueAt(i, 4) ), i, 2);
 				}
-
+				
 			}
 		});
 		panel_1.add(btnFilmeSuchen);
@@ -377,6 +412,11 @@ public class VideothekFrame extends JFrame {
 				"FSK  0 Jahre", "FSK  6 Jahre", "FSK 12 Jahre", "FSK 16 Jahre",
 				"FSK 18 Jahre" }));
 		panel_1.add(comboBox);	
+		//Setzen des Datums
+		Date date = new Date();
+		// Festlegung des Formats:
+		SimpleDateFormat df = new SimpleDateFormat( "dd.MM.yyyy" );
+		this.setTitle("Videothek Manager"+ "  -  "+ df.format( date ));
 
 	}
 
@@ -388,7 +428,7 @@ public class VideothekFrame extends JFrame {
 	 * 
 	 */
 	private void updateTable(int row) {
-		TableModel model = new DefaultTableModel(row, 3) {
+		TableModel model = new DefaultTableModel(row, 5) {
 			/**
 			 * 
 			 */
@@ -397,8 +437,8 @@ public class VideothekFrame extends JFrame {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-		};
-
+		};	
+		
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -410,9 +450,17 @@ public class VideothekFrame extends JFrame {
 		tc.setHeaderValue("Filmtitel");
 		tc.setPreferredWidth(240);
 
+		//Setzen der Überschriften - in Filiale vorhandene Exemplare
 		for (int i = 0; i < header.size(); i++) {
 			tc = tcm.getColumn(i + 1);
-			tc.setHeaderValue("als " + header.get(i));
+			tc.setHeaderValue(header.get(i) + " in Filiale");
+			tc.setPreferredWidth(80);
+		}
+		
+		//Setzen der Überschriften - insgesamte Exemplare
+		for (int i = 0; i < header.size(); i++) {
+			tc = tcm.getColumn(i + 3);
+			tc.setHeaderValue(header.get(i));
 			tc.setPreferredWidth(40);
 		}
 	}
