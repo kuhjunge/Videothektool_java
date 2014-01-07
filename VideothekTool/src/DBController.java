@@ -307,6 +307,27 @@ public class DBController {
 		}
 		return filmList.get(0);
 	}
+	
+	/**
+	 * Diese Methode gibt einen Film zurück, anhand seiner id
+	 * @param idFilm
+	 * @return
+	 */
+	public Film getFilm(int idFilm) {
+		List<Film> filmList = new LinkedList<Film>();
+		try {
+			QueryBuilder<Film, String> queryBuilder = filmDao.queryBuilder();
+			queryBuilder.where().eq("idFilm", idFilm);
+
+			PreparedQuery<Film> preparedQuery = queryBuilder.prepare();
+			filmList = filmDao.query(preparedQuery);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return filmList.get(0);
+	}
+	
+	
 
 	/**
 	 * Diese Methode schreibt ein Filmobjekt in die Datenbank

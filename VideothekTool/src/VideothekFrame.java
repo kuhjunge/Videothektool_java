@@ -153,7 +153,7 @@ public class VideothekFrame extends JFrame {
 		this.addKundeDialog = new AddKundeDialog(db);
 		this.addKundeDialog.setModal(true);
 		
-		this.warenkorbDialog = new WarenkorbDialog();
+		this.warenkorbDialog = new WarenkorbDialog(db);
 		this.warenkorbDialog.setModal(true);		
 
 		//Variableninitialisierung
@@ -198,6 +198,7 @@ public class VideothekFrame extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				warenkorbDialog.setLocationRelativeTo(getParent());
+				warenkorbDialog.setWarenkorb(warenkorb);
 				warenkorbDialog.setVisible(true);
 			}
 		});
