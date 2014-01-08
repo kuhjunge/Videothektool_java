@@ -6,17 +6,22 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import javax.swing.text.TableView.TableCell;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +34,15 @@ import javax.swing.JTable;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 
 
@@ -44,7 +58,9 @@ public class WarenkorbDialog extends JDialog {
 
 	private DBController db;
 	private List<Integer> warenkorb = null;
+	private int idKunde = -1;
 	private JTable table;
+	private JTextField textField;
 	
 	/**
 	 * Create the dialog.
@@ -56,6 +72,7 @@ public class WarenkorbDialog extends JDialog {
 			 */
 			@Override
 			public void componentShown(ComponentEvent arg0) {
+				//erstelle Table
 				updateTable(warenkorb.size());
 			}
 		});
@@ -81,20 +98,60 @@ public class WarenkorbDialog extends JDialog {
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
 				table = new JTable();
+				table.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent arg0) {
+						if(table.getSelectedRow() != -1){						
+							berechnePreis(table.getSelectedRow());
+							berechneGesamtPreis();
+						}
+					}
+					
+				});
 				scrollPane.setViewportView(table);
 			}
 		}
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
+				JButton okButton = new JButton("Buchen");
 				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
+					/**
+					 * Buchen 
+					 */
+					public void actionPerformed(ActionEvent arg0) {						
 						dispose();
 					}
 				});
+				buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+				{
+					JPanel panel = new JPanel();
+					FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+					flowLayout.setAlignment(FlowLayout.LEFT);
+					buttonPane.add(panel);
+					{
+						JLabel label_1 = new JLabel("GesamtPreis:");
+						panel.add(label_1);
+					}
+					{
+						textField = new JTextField();
+						textField.setEditable(false);
+						panel.add(textField);
+						textField.setColumns(10);
+					}
+					{
+						JButton btnKeinKundeGewhlt = new JButton("kein Kunde gew\u00E4hlt");
+						btnKeinKundeGewhlt.addActionListener(new ActionListener() {
+							/**
+							 * Auswahl des Kunden
+							 */
+							public void actionPerformed(ActionEvent arg0) {
+								
+							}
+						});
+						panel.add(btnKeinKundeGewhlt);
+					}
+				}
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
@@ -110,8 +167,6 @@ public class WarenkorbDialog extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
-		//Table erstellen
-		updateTable(warenkorb.size());		
 
 	}
 
@@ -141,11 +196,12 @@ public class WarenkorbDialog extends JDialog {
 					return false;
 				}
 			}
-		};
+						
+		};		
 		
 		//Tableinhalt löschen
 		table.setModel( new DefaultTableModel(0,0));
-		
+				
 		//erstelle neuen Table
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -172,34 +228,31 @@ public class WarenkorbDialog extends JDialog {
 		tc = tcm.getColumn(4);
 		tc.setHeaderValue("Preis");
 		tc.setPreferredWidth(60);
-		
-		//Hinzufügen der FilmTitel
+				
+		//Hinzufügen der FilmTitel		
 		for(int i = 0; i < warenkorb.size(); i++){
-			String titel = db.getFilm(warenkorb.get(i)).getTitel();
-			table.setValueAt(titel, i, 0);
+			String titel = db.getFilm(warenkorb.get(i)).getTitel();			
+			table.setValueAt(titel, i, 0);			
 		}
+	
 		
 		//Hinzufügen von Componenten		
 		tc = tcm.getColumn(1);
-		JComboBox<String> comboBox = new JComboBox<String>();
+		JComboBox<String> comboBox = new JComboBox<String>();	
 		List<String> medium = db.getMediumArt();
 		for(int i = 0; i < medium.size(); i++){
 			comboBox.addItem(medium.get(i));			
-		}
+		}		
 		tc.setCellEditor(new DefaultCellEditor(comboBox));
+		
 		//--
 		tc = tcm.getColumn(2);
-		comboBox = new JComboBox<String>();
-		int anzahlExemplare = 0;
-		if( warenkorb.size() != 0){
-			for(int i = 0; i < warenkorb.size(); i++){
-				anzahlExemplare = db.getAnzahlDVDPraesent( warenkorb.get(i) );
-				for(int a = 0; a <= anzahlExemplare; a++){
-					comboBox.addItem(a+"");
-				}			//TODO Ändern, daß jede Row der Column eigene ComboBox hat	
-			}
-		}						
+		comboBox = new JComboBox<String>();		
+		for(int a = 0; a <= 3; a++){
+			comboBox.addItem(a+"");
+		}		
 		tc.setCellEditor(new DefaultCellEditor(comboBox));
+		
 		//--
 		tc = tcm.getColumn(3);
 		comboBox = new JComboBox<String>();
@@ -215,10 +268,74 @@ public class WarenkorbDialog extends JDialog {
 			comboBox.addItem(""+df.format(date) );
 		}		
 		comboBox.setMaximumRowCount(14);
-		comboBox.setSize(60, 30);
+		comboBox.setSize(60, 30);	
 		tc.setCellEditor(new DefaultCellEditor(comboBox));
 		
+		//Hinzufügen einer Sortierfunktion		
+		//table.setRowSorter(new TableRowSorter(model)); //Hinzufügen führt zu Fehlern
 		
+	}
+	
+	/**
+	 * Diese Methode berechnet für die aktuelle Zeile,
+	 * sofern alle Parameter(Medium, Anzahl, Datum) gesetzt sind
+	 * den Preis
+	 * @param row
+	 */
+	private void berechnePreis(int row){
+		if(table.getValueAt(row, 1) != null && table.getValueAt(row, 2) != null && table.getValueAt(row, 3) != null){
+			//Medienzuschlag
+			double medium = db.getMediumZuschlag( (String) table.getValueAt(row, 1));
+
+			//Anzahl und Überprüfung, ob soviele möglich sind
+			int anzahl = Integer.valueOf( (String)table.getValueAt(row, 2) );
+						
+			if( (String) table.getValueAt(row, 1) == "DVD"){
+				if( db.getAnzahlDVD(warenkorb.get(row)) < anzahl ){
+					return;
+				}
+			}
+			else{
+				if( db.getAnzahlBluRay(warenkorb.get(row)) < anzahl ){
+					return;
+				}
+			}
+			
+			//Tage
+			Calendar heute = new GregorianCalendar();
+			heute.setTime(new Date());
+			DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+			Calendar ausleiheBis = new GregorianCalendar();
+			try {
+				ausleiheBis.setTime( df.parse( (String) table.getValueAt(row, 3)) );
+			} catch (ParseException e) {				
+				System.out.println(e.toString());
+			}	
+							
+			long diff = ausleiheBis.getTimeInMillis() - heute.getTimeInMillis();
+			int tage = (int)(diff / (1000*60*60*24)+1) ;			
+			//------------------
+			Film film = db.getFilm(warenkorb.get(row));
+			double value = film.getGrundPreis() * tage * anzahl + medium * tage * anzahl;
+			if( heute.before(film.getNeu_Bis())){
+				value += film.getNeuheiten_Zuschlag() * tage * anzahl;
+			}
+			
+			table.setValueAt(value, row, 4);			
+		}
+	}
+
+	/**
+	 * Diese Methode berechnet den Preis aller gewählten Filme
+	 */
+	private void berechneGesamtPreis() {
+		double preis = 0.0;
+		for(int i = 0; i < table.getRowCount(); i++){			
+			if(table.getValueAt(i, 4) != null){				
+				preis += (Double)table.getValueAt(i, 4);
+			}
+		}
+		textField.setText(String.valueOf(preis));		
 	}
 	
 }

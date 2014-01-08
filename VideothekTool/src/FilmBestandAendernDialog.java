@@ -155,9 +155,7 @@ public class FilmBestandAendernDialog extends JDialog {
 	
 	private void writeValues(){
 		int dvd = (int)spinner_1.getValue();
-		int bluRay = (int)spinner_2.getValue();
-		//TODO SicherheitsPopup-Abfrage "wirklich?"
-		//JOptionPane.showMessageDialog
+		int bluRay = (int)spinner_2.getValue();		
 		try{
 			db.writeAnzahlDVD(dvd, idFilm);
 			db.writeAnzahlBluRay(bluRay, idFilm);

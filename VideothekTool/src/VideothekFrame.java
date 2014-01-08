@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 
 import javax.swing.JFrame;
@@ -27,11 +28,14 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 
@@ -239,8 +243,7 @@ public class VideothekFrame extends JFrame {
 			/**
 			 * Ausgewählter Film wird gelöscht, wenn alle Exemplare nicht verliehen sind
 			 */
-			public void actionPerformed(ActionEvent arg0) {
-				//TODO Abfrage-Popup hinzufügen				
+			public void actionPerformed(ActionEvent arg0) {							
 				if(table.getSelectedRow() != -1){
 					Film film = db.getFilm( (String) table.getValueAt( table.getSelectedRow(), 0) );		
 
@@ -451,6 +454,7 @@ public class VideothekFrame extends JFrame {
 	 * 
 	 */
 	private void updateTable(int row) {
+		//Überschreiben des TableModels
 		TableModel model = new DefaultTableModel(row, 5) {
 			/**
 			 * 
@@ -460,8 +464,9 @@ public class VideothekFrame extends JFrame {
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
-		};	
-		
+						
+		};
+				
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -486,13 +491,16 @@ public class VideothekFrame extends JFrame {
 			tc.setHeaderValue(header.get(i));
 			tc.setPreferredWidth(40);
 		}
+		
+		//Hinzufügen einer Sortierfunktion		
+		table.setRowSorter(new TableRowSorter<TableModel>(model));
 	}
 	
 	/**
 	 *Diese Methode lädt aus der DB in den Table Filme anhand der Einschränkungen
 	 *von Combobox und TextField 
 	 */
-	private void setTableValues(){
+	private void setTableValues(){		
 		// Auswahl der Filme
 		String fsk = "0";
 		switch (comboBox.getSelectedItem().toString()) {
@@ -523,6 +531,7 @@ public class VideothekFrame extends JFrame {
 			table.setValueAt(db.getAnzahlDVDPraesent( filme.get(i).getIdFilm() ), i, 1);
 			table.setValueAt(db.getAnzahlBluRayPraesent( filme.get(i).getIdFilm() ), i, 2);
 		}
+			
 		
 	}
 

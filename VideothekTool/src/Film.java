@@ -13,7 +13,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "Film_Stammdaten")
 public class Film {
 	@DatabaseField(generatedId = true)
-	private int idFilm;
+	private int idFilm;	
 	@DatabaseField
 	private String titel;
 	@DatabaseField
@@ -129,16 +129,18 @@ public class Film {
 	}
 
 	/**
-	 * toString-Methode
+	 * @return the neuheiten_Zuschlag
 	 */
-	@Override
-	public String toString() {
-		return "Filmdatensatz: Titel=" + titel + ", Jahr="
-				+ this.jahr + ", Laufzeit=" + laufzeit + ", IMDB="
-				+ imdb_Wertung + ", Plot=" + plot + ", FSK=" + fsk
-				+ ", Grundpreis=" + grundpreis + ", N-Zuschlag="
-				+ neuheiten_Zuschlag + ", Neu bis=" + neu_Bis + ", Genre="
-				+ genre_ref + ".\n";
+	public double getNeuheiten_Zuschlag() {
+		return neuheiten_Zuschlag;
 	}
 
+	/**
+	 * @return the neu_Bis
+	 */
+	public Date getNeu_Bis() {
+		return neu_Bis;
+	}
+
+	
 }

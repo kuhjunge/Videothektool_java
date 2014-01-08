@@ -496,4 +496,28 @@ public class DBController {
 		}
 	}
 	
+	/**
+	 * Diese Methode gibt für ein Medium(DVD/BluRay) den Medienaufschlag zurück
+	 * @param nameMedium
+	 * @return
+	 */
+	public double getMediumZuschlag(String nameMedium){
+		double value = 0.0;
+		try {
+			String query = "select Medienaufschlag from Mediumart where nameMedium = '"+nameMedium+"'";
+			GenericRawResults<String[]> rawResults = filmDao.queryRaw(query);
+			List<String[]> ergebnis = rawResults.getResults();
+
+			for (String[] str : ergebnis) {
+				for (String s : str) {
+					value = Double.valueOf(s);
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return value;
+	}
+	
 }

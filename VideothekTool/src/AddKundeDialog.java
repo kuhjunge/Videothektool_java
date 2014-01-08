@@ -6,11 +6,14 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -19,7 +22,21 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
+
 import java.awt.GridLayout;
+
+import javax.swing.CellEditor;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
 
 public class AddKundeDialog extends JDialog {
 
@@ -28,18 +45,18 @@ public class AddKundeDialog extends JDialog {
 	private DBController db;
 	private JTable table;
 	private JScrollPane scrollPane;
-	private JCheckBox chckbxEditierbar;
 
 	/**
 	 * Anzahl der Reihen im Table
 	 */
 	private int rows = 0;
-	
+
 	/**
 	 * List<Kunde>
 	 */
 	private List<Kunde> kunden = null;
-	
+	private JCheckBoxMenuItem chckbxmntmEditierbar;
+
 	/**
 	 * Create the dialog.
 	 */
@@ -50,7 +67,7 @@ public class AddKundeDialog extends JDialog {
 
 		this.db = db;
 
-		setBounds(100, 100, 600, 300);
+		setBounds(100, 100, 700, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -60,6 +77,13 @@ public class AddKundeDialog extends JDialog {
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
 				table = new JTable();
+				table.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent arg0) {
+						if(arg0.getNewValue() != null){
+							System.out.println(arg0.getNewValue()+" alt: "+arg0.getOldValue());
+						}
+					}
+				});
 				scrollPane.setViewportView(table);
 			}
 		}
@@ -67,27 +91,6 @@ public class AddKundeDialog extends JDialog {
 			JPanel panel = new JPanel();
 			contentPanel.add(panel, BorderLayout.SOUTH);
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-			{
-				chckbxEditierbar = new JCheckBox("editierbar?");
-				chckbxEditierbar.addActionListener(new ActionListener() {
-					//Ändern der Editierbarkeit des Tables
-					public void actionPerformed(ActionEvent e) {
-						if( chckbxEditierbar.isSelected() ){
-							setTableEdit(rows,true);
-							System.out.println("true");
-						}
-						else{
-							setTableEdit(rows,false);
-							System.out.println("false");
-						}
-					}
-				});
-				panel.add(chckbxEditierbar);
-			}
-			{
-				JButton btnNewButton = new JButton("Neuer Kunde");
-				panel.add(btnNewButton);
-			}
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -125,45 +128,85 @@ public class AddKundeDialog extends JDialog {
 		{
 			// Lade Kundendaten aus DB
 			this.kunden = db.getKunden();
+			{
+				JMenuBar menuBar = new JMenuBar();
+				setJMenuBar(menuBar);
+				{
+					JMenu mnKunde = new JMenu("Kunde");
+					menuBar.add(mnKunde);
+					{
+						chckbxmntmEditierbar = new JCheckBoxMenuItem(
+								"Editierbar");
+						chckbxmntmEditierbar
+								.addActionListener(new ActionListener() {
+									/**
+									 * Setzen, daß Table editierbar ist
+									 */
+									public void actionPerformed(ActionEvent e) {
+										if (chckbxmntmEditierbar.isSelected()) {
+											setTableEdit(rows, true);
+										} else {
+											setTableEdit(rows, false);
+										}
+									}
+								});
+						{
+							JMenuItem mntmNeuerKunde = new JMenuItem(
+									"Neuer Kunde");
+							mnKunde.add(mntmNeuerKunde);
+						}
+						{
+							JSeparator separator = new JSeparator();
+							mnKunde.add(separator);
+						}
+						mnKunde.add(chckbxmntmEditierbar);
+					}
+				}
+			}
 
 			// Überschriften des Table
 			if (this.kunden != null) {
 				this.rows = kunden.size();
-				setTableEdit(rows, false);					
+				setTableEdit(rows, false);
 			}
 
 		}
+
 	}
 
 	/**
-	 * Diese Methode setzt das TableModel mit einem neuen Row-Wert und editierbar
-	 * @param value Anzahl der Rows
-	 * @param editable Editierbar oder nicht
+	 * Diese Methode setzt das TableModel mit einem neuen Row-Wert und
+	 * editierbar
+	 * 
+	 * @param value
+	 *            Anzahl der Rows
+	 * @param editable
+	 *            Editierbar oder nicht
 	 * @return
 	 */
 	private void setTableEdit(int value, boolean editable) {
-		if(kunden == null){
+		if (kunden == null) {
 			return;
 		}
 		TableModel model = null;
-		if(editable){
-			model = new DefaultTableModel(value, 5) {			
+		if (editable) {
+			model = new DefaultTableModel(value, 5) {
 				private static final long serialVersionUID = -8558421582956901665L;
-				
+
 				public boolean isCellEditable(int row, int column) {
 					return true;
 				}
-			};			
-		}
-		else{
-			model = new DefaultTableModel(value, 5) {			
+			};
+		} else {
+			model = new DefaultTableModel(value, 5) {
 				private static final long serialVersionUID = -8558421582956901665L;
-				
+
 				public boolean isCellEditable(int row, int column) {
 					return false;
 				}
-			};			
+			};
 		}
+
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JTableHeader th = table.getTableHeader();
@@ -192,6 +235,13 @@ public class AddKundeDialog extends JDialog {
 			table.setValueAt(kunden.get(i).getTelefonnummer(), i, 3);
 			table.setValueAt(kunden.get(i).getEmail(), i, 4);
 		}
+
+		// Hinzufügen einer Sortierfunktio
+		table.setRowSorter(new TableRowSorter<TableModel>(model));
+	}
+
+	private int abfrageDialog(String str) {
+		return JOptionPane.showConfirmDialog(this, str);
 	}
 
 }
