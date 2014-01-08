@@ -13,7 +13,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "Film_Stammdaten")
 public class Film {
 	@DatabaseField(generatedId = true)
-	protected int idFilm;
+	private int idFilm;
 	@DatabaseField
 	private String titel;
 	@DatabaseField

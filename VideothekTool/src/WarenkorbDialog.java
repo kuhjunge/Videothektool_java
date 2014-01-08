@@ -193,7 +193,7 @@ public class WarenkorbDialog extends JDialog {
 		int anzahlExemplare = 0;
 		if( warenkorb.size() != 0){
 			for(int i = 0; i < warenkorb.size(); i++){
-				anzahlExemplare = db.getAnzahlDVDPraesent( warenkorb.get(i) , db.getAnzahlDVD(warenkorb.get(i) ) );
+				anzahlExemplare = db.getAnzahlDVDPraesent( warenkorb.get(i) );
 				for(int a = 0; a <= anzahlExemplare; a++){
 					comboBox.addItem(a+"");
 				}			//TODO Ändern, daß jede Row der Column eigene ComboBox hat	

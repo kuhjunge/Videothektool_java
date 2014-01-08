@@ -16,12 +16,25 @@ public class FilmExemplar {
 	private int film_Ref;
 	@DatabaseField
 	private int medium_Ref;	
+	@DatabaseField
+	private boolean isVerliehen;
 
 	/**
 	 * Default-Konstruktor
 	 */
 	public FilmExemplar() {
 
+	}
+	
+	/**
+	 * Konstruktor
+	 * @param film_Ref
+	 * @param medium_Ref
+	 */
+	public FilmExemplar(int film_Ref, int medium_Ref){		
+		this.film_Ref = film_Ref;
+		this.medium_Ref = medium_Ref;
+		this.isVerliehen = false;
 	}
 
 	/**

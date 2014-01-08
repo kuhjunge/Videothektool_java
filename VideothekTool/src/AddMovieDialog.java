@@ -239,4 +239,6 @@ public class AddMovieDialog extends JDialog {
 		txtrStory.setBounds(10, 139, 200, 70);
 		contentPanel.add(txtrStory);
 	}
+	
+	
 }

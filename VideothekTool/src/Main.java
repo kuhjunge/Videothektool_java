@@ -21,12 +21,6 @@ public class Main extends JFrame {
 	/**
 	 * @param args
 	 */
-	/*
-	 * public static void main(String[] args) { // TODO Auto-generated method
-	 * stub LoginScreen.openLoginScreen(null);
-	 * //VideothekFrame.openVideothek(null); }
-	 */
-
 	public static void main(String[] args) {
 
 		// LoginScreen.openLoginScreen(null);

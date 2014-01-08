@@ -38,10 +38,12 @@ import javax.swing.JScrollPane;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JDialog;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
@@ -77,6 +79,10 @@ public class VideothekFrame extends JFrame {
 	 */
 	private WarenkorbDialog warenkorbDialog; 
 	/**
+	 * FilmBestandAendernDialog
+	 */
+	private FilmBestandAendernDialog bestandDialog;
+	/**
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
@@ -104,6 +110,8 @@ public class VideothekFrame extends JFrame {
 	 */
 	private List<Integer> warenkorb;
 	private JMenuItem mntmWarenkorb;
+	private JMenuItem mntmAusgewhltenFilmLschen;
+	private JSeparator separator;
 	/**
 	 * Launch the application.
 	 */
@@ -155,6 +163,9 @@ public class VideothekFrame extends JFrame {
 		
 		this.warenkorbDialog = new WarenkorbDialog(db);
 		this.warenkorbDialog.setModal(true);		
+		
+		this.bestandDialog = new FilmBestandAendernDialog(db);
+		this.bestandDialog.setModal(true);
 
 		//Variableninitialisierung
 		this.warenkorb = new LinkedList<Integer>();
@@ -219,6 +230,32 @@ public class VideothekFrame extends JFrame {
 			}
 		});
 		mnFilme.add(mntmNewMenuItem);
+		
+		separator = new JSeparator();
+		mnFilme.add(separator);
+		
+		mntmAusgewhltenFilmLschen = new JMenuItem("ausgew\u00E4hlten Film l\u00F6schen");
+		mntmAusgewhltenFilmLschen.addActionListener(new ActionListener() {
+			/**
+			 * Ausgewählter Film wird gelöscht, wenn alle Exemplare nicht verliehen sind
+			 */
+			public void actionPerformed(ActionEvent arg0) {
+				//TODO Abfrage-Popup hinzufügen				
+				if(table.getSelectedRow() != -1){
+					Film film = db.getFilm( (String) table.getValueAt( table.getSelectedRow(), 0) );		
+
+					int value = abfrageDialog("Wollen Sie den Film: \n"
+												+ film.getTitel() +"\n"
+												+ "und alle Exemplare wirklich löschen?");
+					if(value == JOptionPane.YES_OPTION){					
+						int idFilm = film.getIdFilm();					
+						db.deleteFilm(idFilm);
+						setTableValues();
+					}
+				}
+			}
+		});
+		mnFilme.add(mntmAusgewhltenFilmLschen);
 		
 		mnKunden = new JMenu("Kunden");
 		menuBar.add(mnKunden);
@@ -309,6 +346,21 @@ public class VideothekFrame extends JFrame {
 		mntmFilmbestandndern_1.setEnabled(false);
 		popupMenu.add(mntmFilmbestandndern_1);
 		
+		mntmFilmbestandndern_1.addActionListener(new ActionListener(){
+			/**
+			 * Aufruf des FilmBestandAendernDialogs
+			 */
+			public void actionPerformed(ActionEvent e) {
+				int value = db.getFilm( (String)table.getValueAt( table.getSelectedRow() , 0) ).getIdFilm();				
+				bestandDialog.setFilm( value );
+				bestandDialog.setLocationRelativeTo(getParent());
+				bestandDialog.setVisible(true);
+				if(bestandDialog.isChanged()){
+					setTableValues();
+				}
+			}
+		});
+		
 		mntmFilmdetailsndern = new JMenuItem("Filmdetails \u00E4ndern");
 		mntmFilmdetailsndern.addActionListener(new ActionListener() {
 			/**
@@ -364,37 +416,7 @@ public class VideothekFrame extends JFrame {
 			 * nach FSK - Auswahl mit Hilfe eines Suchstrings
 			 */
 			public void actionPerformed(ActionEvent e) {
-				// Auswahl der Filme
-				String fsk = "0";
-				switch (comboBox.getSelectedItem().toString()) {
-				case ("FSK  0 Jahre"):
-					fsk = "0";
-					break;
-				case ("FSK  6 Jahre"):
-					fsk = "6";
-					break;
-				case ("FSK 12 Jahre"):
-					fsk = "12";
-					break;
-				case ("FSK 16 Jahre"):
-					fsk = "16";
-					break;
-				case ("FSK 18 Jahre"):
-					fsk = "18";
-				}		
-							
-				
-				List<Film> filme = db.getFilme(textField.getText(), fsk);				
-				updateTable(filme.size());
-
-				for (int i = 0; i < filme.size(); i++) {					
-					table.setValueAt(filme.get(i).getTitel(), i, 0);					
-					table.setValueAt(db.getAnzahlDVD( filme.get(i).getIdFilm() ), i, 3);					
-					table.setValueAt(db.getAnzahlBluRay( filme.get(i).getIdFilm() ), i, 4);
-					table.setValueAt(db.getAnzahlDVDPraesent( filme.get(i).getIdFilm(), (int)table.getValueAt(i, 3) ), i, 1);
-					table.setValueAt(db.getAnzahlBluRayPraesent( filme.get(i).getIdFilm(), (int) table.getValueAt(i, 4) ), i, 2);
-				}
-				
+				setTableValues();
 			}
 		});
 		panel_1.add(btnFilmeSuchen);
@@ -465,6 +487,47 @@ public class VideothekFrame extends JFrame {
 			tc.setPreferredWidth(40);
 		}
 	}
+	
+	/**
+	 *Diese Methode lädt aus der DB in den Table Filme anhand der Einschränkungen
+	 *von Combobox und TextField 
+	 */
+	private void setTableValues(){
+		// Auswahl der Filme
+		String fsk = "0";
+		switch (comboBox.getSelectedItem().toString()) {
+		case ("FSK  0 Jahre"):
+			fsk = "0";
+			break;
+		case ("FSK  6 Jahre"):
+			fsk = "6";
+			break;
+		case ("FSK 12 Jahre"):
+			fsk = "12";
+			break;
+		case ("FSK 16 Jahre"):
+			fsk = "16";
+			break;
+		case ("FSK 18 Jahre"):
+			fsk = "18";
+		}		
+					
+		
+		List<Film> filme = db.getFilme(textField.getText(), fsk);				
+		updateTable(filme.size());
 
+		for (int i = 0; i < filme.size(); i++) {					
+			table.setValueAt(filme.get(i).getTitel(), i, 0);					
+			table.setValueAt(db.getAnzahlDVD( filme.get(i).getIdFilm() ), i, 3);					
+			table.setValueAt(db.getAnzahlBluRay( filme.get(i).getIdFilm() ), i, 4);
+			table.setValueAt(db.getAnzahlDVDPraesent( filme.get(i).getIdFilm() ), i, 1);
+			table.setValueAt(db.getAnzahlBluRayPraesent( filme.get(i).getIdFilm() ), i, 2);
+		}
+		
+	}
+
+	private int abfrageDialog(String str){		
+		return JOptionPane.showConfirmDialog(this, str);
+	}
 	
 }
