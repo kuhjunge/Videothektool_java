@@ -361,7 +361,17 @@ public class VideothekFrame extends JFrame {
 		popupMenu.add(mntmInWarenkorb);
 
 		mntmReservieren = new JMenuItem("Reservieren");
+		mntmReservieren.addActionListener(new ActionListener() {
+			/**
+			 * Aufruf des ReservierenDialog
+			 */
+			public void actionPerformed(ActionEvent e) {
+				//TODO ReservierenDialog einfügen						
+			}
+		});
+
 		popupMenu.add(mntmReservieren);
+		
 
 		mntmFilmbestandndern_1 = new JMenuItem("Filmbestand \u00E4ndern");
 		mntmFilmbestandndern_1.setEnabled(false);
