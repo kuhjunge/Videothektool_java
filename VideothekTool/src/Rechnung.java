@@ -31,4 +31,26 @@ public class Rechnung {
 	public Rechnung(){
 		
 	}
+	
+	/**
+	 * Konstruktor
+	 * @param betrag
+	 * @param bezahl_Datum
+	 * @param kunde_Ref
+	 */
+	public Rechnung(double betrag, Date bezahl_Datum, int kunde_Ref){
+		this.betrag = betrag;
+		this.bezahl_Datum = bezahl_Datum;
+		this.kunde_Ref = kunde_Ref;
+	}
+
+	/**
+	 * @return the idRechnung
+	 */
+	public int getIdRechnung() {
+		return idRechnung;
+	}
+	
+	
+	
 }

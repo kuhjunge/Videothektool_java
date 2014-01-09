@@ -31,6 +31,12 @@ public class FilmBestandAendernDialog extends JDialog {
 	private static final long serialVersionUID = 5110370406318458045L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
+	/**
+	 * Oberfenster, das diesen Dialog aufruft,
+	 * wird genutzt um den Table aus Oberfenster zu aktualisieren,
+	 * wenn hier Änderungen kommen
+	 */
+	private VideothekFrame topFrame;
 
 	/**
 	 * DBController
@@ -46,7 +52,7 @@ public class FilmBestandAendernDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public FilmBestandAendernDialog(DBController db) {
+	public FilmBestandAendernDialog(DBController db, VideothekFrame topFrame) {
 		addComponentListener(new ComponentAdapter() {
 			/**
 			 * Aufruf des Dialogs
@@ -58,6 +64,7 @@ public class FilmBestandAendernDialog extends JDialog {
 
 		});
 		this.db = db;
+		this.topFrame = topFrame;
 		setTitle("Anzahl Filialexemplare \u00E4ndern");
 		setResizable(false);
 		setModal(true);
@@ -203,8 +210,10 @@ public class FilmBestandAendernDialog extends JDialog {
 						int i = s.lastIndexOf("- ID: ") + 6;
 						String str = s.substring(i);
 						db.deleteExemplar(Integer.parseInt(str));
-					}
+					}					
 				}
+				//Aktualisiere den Table aus VideothekFrame
+				topFrame.setTableValues();
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString()

@@ -1,5 +1,11 @@
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +81,11 @@ public class DBController {
 	 * Dao für View Verliehen
 	 */
 	private Dao<Verliehen, String> verliehenDao;
+	
+	/**
+	 * Dao für View Rechnung
+	 */
+	private Dao<Rechnung, String> rechnungDao;
 
 	/**
 	 * Default- Konstruktor Es wird keine Verbindung zur Datenbank aufgebaut.
@@ -118,6 +129,7 @@ public class DBController {
 				.createDao(this.connectionSource, Kunde.class);
 		this.verliehenDao = DaoManager.createDao(this.connectionSource, Verliehen.class);
 		this.mediumDao = DaoManager.createDao(this.connectionSource, Medium.class);
+		this.rechnungDao = DaoManager.createDao(this.connectionSource, Rechnung.class);
 
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
@@ -504,6 +516,62 @@ public class DBController {
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Diese Methode erzeugt einen neuen Eintrag in Verliehen 
+	 * für ein bestimmtes FilmExemplar für eine bestimmte Rechnung,
+	 * und setzt die Leihfrist(RückgabeDatum) und das heutige Datum
+	 * sowie wird der Flag isVerliehen des Exemplares gesetzt
+	 * @param idExemplar
+	 * @param leihfrist
+	 * @param idRechnung
+	 */
+	public void writeVerliehen(int idExemplar, Date leihfrist, int idRechnung){
+		try{
+			//Berechnung java.sql.Date
+			java.util.Date date = new java.util.Date();			
+			DateFormat df_sql = new SimpleDateFormat("yyyy-MM-dd");				
+			String str2 = df_sql.format(date);
+			java.sql.Date date_sql = java.sql.Date.valueOf(str2);
+			//--
+			Verliehen obj = new Verliehen(date_sql, leihfrist, idRechnung, idExemplar);
+			verliehenDao.create(obj);
+			
+			//setze isVerliehenFlag des Exemplars
+			FilmExemplar exemplar = bestandDao.queryForId(String.valueOf(idExemplar));
+			exemplar.setVerliehen(true);
+			bestandDao.update(exemplar);
+			
+		}catch(Exception e){
+			System.out.println(e.toString()+"Fehler beim Schreiben von Verleihen");
+		}
+	}
+	
+	/**
+	 * Diese Methode schreibt eine Rechnung,
+	 * für einen Kunden mit einem Betrag
+	 * und gibt seine ID zurück
+	 * @param idKunde
+	 * @param betrag
+	 * @return
+	 */
+	public int writeRechnung(int idKunde, double betrag){
+		try {	
+			//Berechnung java.sql.Date
+			java.util.Date date = new java.util.Date();			
+			DateFormat df_sql = new SimpleDateFormat("yyyy-MM-dd");				
+			String str2 = df_sql.format(date);
+			java.sql.Date date_sql = java.sql.Date.valueOf(str2);
+			
+			Rechnung rechnung = new Rechnung(betrag, date_sql, idKunde);
+			rechnungDao.create(rechnung);
+			
+			return rechnung.getIdRechnung();
+		} catch (Exception e) {
+			System.out.println(e.toString()+"Fehler beim Schreiben der Rechnung");
+			return -1;
+		}
 	}
 	
 }

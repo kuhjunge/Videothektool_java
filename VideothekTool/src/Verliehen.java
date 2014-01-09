@@ -16,6 +16,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "Film_ausleihen")
 public class Verliehen {
 
+	@DatabaseField(generatedId = true)
+	private int idVerliehen;
 	@DatabaseField
 	private Date ausleihDatum;
 	@DatabaseField
@@ -23,7 +25,7 @@ public class Verliehen {
 	@DatabaseField
 	private Date leihFrist;
 	@DatabaseField
-	private int rechnungs_Ref;
+	private int rechnung_Ref;
 	@DatabaseField
 	private int medienExemplar_Ref;
 	
@@ -33,5 +35,24 @@ public class Verliehen {
 	public Verliehen(){
 		
 	}
+	
+
+	/**
+	 * Konstruktor
+	 * @param ausleihDatum
+	 * @param rueckgabeDatum
+	 * @param leihFrist
+	 * @param rechnungs_Ref
+	 * @param medienExemplar_Ref
+	 */
+	public Verliehen(Date ausleihDatum, Date leihFrist,
+			int rechnung_Ref, int medienExemplar_Ref) {
+		super();
+		this.ausleihDatum = ausleihDatum;		
+		this.leihFrist = leihFrist;
+		this.rechnung_Ref = rechnung_Ref;
+		this.medienExemplar_Ref = medienExemplar_Ref;
+	}
+	
 	
 }

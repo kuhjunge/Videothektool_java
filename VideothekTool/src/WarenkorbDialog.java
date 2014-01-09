@@ -6,21 +6,18 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-import javax.swing.text.TableView.TableCell;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -38,10 +35,6 @@ import javax.swing.JTable;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
@@ -70,11 +63,17 @@ public class WarenkorbDialog extends JDialog {
 	private JTextField textField;
 	private JButton button_1;
 	private JPopupMenu popupMenu;
+	/**
+	 * Oberfenster, das diesen Dialog aufruft,
+	 * wird genutzt um den Table aus Oberfenster zu aktualisieren,
+	 * wenn hier Änderungen kommen
+	 */
+	private VideothekFrame topFrame;
 	
 	/**
 	 * Create the dialog.
 	 */
-	public WarenkorbDialog(DBController db) {
+	public WarenkorbDialog(DBController db, VideothekFrame topFrame) {
 		addComponentListener(new ComponentAdapter() {
 			/**
 			 * 
@@ -89,6 +88,7 @@ public class WarenkorbDialog extends JDialog {
 		//Initialisierung der Variablen
 		this.db = db;	
 		warenkorb = new ArrayList<Integer>();
+		this.topFrame = topFrame;
 		//---
 		//Setzen des Datums
 		Date date = new Date();
@@ -130,26 +130,7 @@ public class WarenkorbDialog extends JDialog {
 					 * Buchen 
 					 */
 					public void actionPerformed(ActionEvent arg0) {
-						String str = textField.getText();
-						if( str.isEmpty() || Double.parseDouble(str) == 0 || idKunde == -1){
-							return;
-						}						
-						int value = abfrageDialog("Wollen Sie diesen Warenkorb \nmit "+textField.getText()+" € verbuchen");
-						if(value == JOptionPane.YES_OPTION){
-							verbuchen();							
-							warenkorb.clear();
-							button_1.setText("kein Kunde ausgewählt");
-							idKunde = -1;
-							dispose();
-						}
-						else{
-							if(value == JOptionPane.CANCEL_OPTION){
-								warenkorb.clear();
-								button_1.setText("kein Kunde ausgewählt");
-								idKunde = -1;
-								dispose();
-							}
-						}						
+						buchen();
 					}
 				});
 				buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
@@ -293,7 +274,7 @@ public class WarenkorbDialog extends JDialog {
 		
 		//Hinzufügen von Componenten
 		tc = tcm.getColumn(2);
-		JComboBox comboBox = new JComboBox<String>();
+		JComboBox<String> comboBox = new JComboBox<String>();
 		//Datum + 14Tage
 		Date date = new Date();
 		Calendar calendar = new GregorianCalendar();
@@ -453,9 +434,61 @@ public class WarenkorbDialog extends JDialog {
 	
 	/**
 	 * Diese Methode verbucht den Warenkorb
+	 *  
 	 */
-	private void verbuchen(){
-		
+	private void verbuchen() {
+		if(warenkorb.size() != 0){
+			for(int i = 0; i < warenkorb.size(); i++){
+				double betrag = Double.parseDouble( textField.getText() );
+				//schreibe Rechnung				
+				int idRechnung = db.writeRechnung(idKunde, betrag);		
+				System.out.println(idKunde+ " mit Betrag ="+betrag +" und idRechnung "+idRechnung);
+				
+				//Zeitumrechnung von Date zu java.sql.Date
+				String str = (String) table.getValueAt(i, 2);
+				DateFormat df = new SimpleDateFormat("dd.MM.yyyy");				
+				
+				Date date = new Date();
+				try {
+					date = df.parse(str);
+				} catch (ParseException e) {					
+					e.printStackTrace();
+				}
+				DateFormat df_sql = new SimpleDateFormat("yyyy-MM-dd");				
+				String str2 = df_sql.format(date);
+				java.sql.Date date_sql = java.sql.Date.valueOf(str2);			
+				
+				//schreibe die einzelnen Posten der Rechnung
+				db.writeVerliehen((int)warenkorb.get(i), date_sql, idRechnung);
+			}
+		}
+	}
+	
+	/**
+	 * Diese Methode verbucht den Warenkorb
+	 */
+	private void buchen(){
+		String str = textField.getText();
+		if( str.isEmpty() || Double.parseDouble(str) == 0 || idKunde == -1){
+			return;
+		}						
+		int value = abfrageDialog("Wollen Sie diesen Warenkorb \nmit "+textField.getText()+" € verbuchen");
+		if(value == JOptionPane.YES_OPTION){
+			verbuchen();							
+			warenkorb.clear();
+			button_1.setText("kein Kunde ausgewählt");
+			idKunde = -1;
+			topFrame.setTableValues();
+			dispose();
+		}
+		else{
+			if(value == JOptionPane.CANCEL_OPTION){
+				warenkorb.clear();
+				button_1.setText("kein Kunde ausgewählt");
+				idKunde = -1;
+				dispose();
+			}
+		}						
 	}
 	
 }

@@ -27,6 +27,13 @@ public class FilmExemplar {
 	}
 	
 	/**
+	 * @param isVerliehen the isVerliehen to set
+	 */
+	public void setVerliehen(boolean isVerliehen) {
+		this.isVerliehen = isVerliehen;
+	}
+
+	/**
 	 * @return the idExemplar
 	 */
 	public int getIdExemplar() {

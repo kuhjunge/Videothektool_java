@@ -39,6 +39,12 @@ public class AddMovieDialog extends JDialog {
 	private int filmID = 0;
 	private DBController db;
 	Map<Integer, String> genre;
+	/**
+	 * Oberfenster, das diesen Dialog aufruft,
+	 * wird genutzt um den Table aus Oberfenster zu aktualisieren,
+	 * wenn hier Änderungen kommen
+	 */
+	private VideothekFrame topFrame;
 
 	/**
 	 * Setzt eine Filmauswahl in das Fenster!
@@ -85,11 +91,12 @@ public class AddMovieDialog extends JDialog {
 	 * 
 	 * @param videothekFrame
 	 */
-	public AddMovieDialog(JFrame frame, DBController dbi) {
+	public AddMovieDialog(VideothekFrame frame, DBController dbi) {
 		setResizable(false);
 		setModal(true);
 		setTitle("Filmmanager");
 		db = dbi;
+		this.topFrame = frame;
 		genre = db.getGenre();		
 		if (!db.isDBOnline()) {
 			dispose();
@@ -124,6 +131,8 @@ public class AddMovieDialog extends JDialog {
 								Double.parseDouble(textFieldNewCost.getText()),
 								genreid);
 						db.writeMovie(f);
+						//Aktualisieren des Tables in VideothekFrame
+						topFrame.setTableValues();
 						dispose();
 					} catch (Exception fehler) {
 						System.out.println("Fehler beim Eingabeformat!");

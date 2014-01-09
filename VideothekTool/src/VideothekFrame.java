@@ -369,7 +369,7 @@ public class VideothekFrame extends JFrame {
 						.getIdFilm();
 				bestandDialog.setFilm(value);
 				bestandDialog.setLocationRelativeTo(getParent());
-				bestandDialog.setVisible(true);
+				bestandDialog.setVisible(true);						
 			}
 		});
 
@@ -440,10 +440,10 @@ public class VideothekFrame extends JFrame {
 		this.addKundeDialog = new KundenDialog(db);
 		this.addKundeDialog.setModal(true);
 
-		this.warenkorbDialog = new WarenkorbDialog(db);
+		this.warenkorbDialog = new WarenkorbDialog(db, this);
 		this.warenkorbDialog.setModal(true);
 
-		this.bestandDialog = new FilmBestandAendernDialog(db);
+		this.bestandDialog = new FilmBestandAendernDialog(db, this);
 		this.bestandDialog.setModal(true);
 
 	}
@@ -502,7 +502,7 @@ public class VideothekFrame extends JFrame {
 	 * Diese Methode lädt aus der DB in den Table Filme anhand der
 	 * Einschränkungen von Combobox und TextField
 	 */
-	private void setTableValues() {
+	public void setTableValues() {
 		// Auswahl der Filme
 		String fsk = "0";
 		switch (comboBox.getSelectedItem().toString()) {
@@ -529,11 +529,11 @@ public class VideothekFrame extends JFrame {
 		for (int i = 0; i < filme.size(); i++) {
 			table.setValueAt(filme.get(i).getTitel(), i, 0);
 			for (int a = 0; a < medium.size(); a++) {
-				table.setValueAt(db.getAnzahl(filme.get(i).getIdFilm(), medium
+				table.setValueAt(db.getAnzahlPraesent(filme.get(i).getIdFilm(), medium
 						.get(a).getIdMedium()), i, 1 + a);
 			}
 			for (int a = 0; a < medium.size(); a++) {
-				table.setValueAt(db.getAnzahlPraesent(filme.get(i).getIdFilm(),
+				table.setValueAt(db.getAnzahl(filme.get(i).getIdFilm(),
 						medium.get(a).getIdMedium()), i, 1 + medium.size() + a);
 			}
 		}
