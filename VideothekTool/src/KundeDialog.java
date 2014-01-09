@@ -37,6 +37,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class KundeDialog extends JDialog {
 
@@ -45,22 +47,25 @@ public class KundeDialog extends JDialog {
 	private DBController db;
 	private JTable table;
 	private JScrollPane scrollPane;
-
+	
 	/**
-	 * Anzahl der Reihen im Table
+	 * Zur Auswahl einer KundenID für den Warenkobr
 	 */
-	private int rows = 0;
-
-	/**
-	 * List<Kunde>
-	 */
-	private List<Kunde> kunden = null;
-	private JCheckBoxMenuItem chckbxmntmEditierbar;
+	private int idSelectedKunde = -1;
 
 	/**
 	 * Create the dialog.
 	 */
 	public KundeDialog(DBController db) {
+		addComponentListener(new ComponentAdapter() {
+			/**
+			 * Aufruf des Dialogs
+			 */
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				updateTable();
+			}
+		});
 		setModal(true);
 		setResizable(false);
 		setTitle("Kunden");
@@ -103,6 +108,8 @@ public class KundeDialog extends JDialog {
 					 * mit ok beenden
 					 */
 					public void actionPerformed(ActionEvent e) {
+						
+						idSelectedKunde = table.getSelectedRow();
 						dispose();
 					}
 				});
@@ -123,11 +130,8 @@ public class KundeDialog extends JDialog {
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
-		}
-		// Eigenschaften des Tables
-		{
-			// Lade Kundendaten aus DB
-			this.kunden = db.getKunden();
+		}		
+		{			
 			{
 				JMenuBar menuBar = new JMenuBar();
 				setJMenuBar(menuBar);
@@ -135,18 +139,6 @@ public class KundeDialog extends JDialog {
 					JMenu mnKunde = new JMenu("Kunde");
 					menuBar.add(mnKunde);
 					{
-						chckbxmntmEditierbar = new JCheckBoxMenuItem(
-								"Kundendaten \u00E4ndern");
-						chckbxmntmEditierbar
-								.addActionListener(new ActionListener() {
-									/**
-									 * Aufruf Dialog, Kunde editierbar
-									 */
-									public void actionPerformed(ActionEvent e) {
-										//TODO KundeEditDialog(oder so)
-									}
-								});
-						mnKunde.add(chckbxmntmEditierbar);
 						{
 							JSeparator separator = new JSeparator();
 							mnKunde.add(separator);
@@ -162,6 +154,15 @@ public class KundeDialog extends JDialog {
 									//TODO neuer Kunde Dialog
 								}
 							});
+							{
+								JMenuItem mntmKundendatenndern = new JMenuItem("Kundendaten \u00E4ndern");
+								mntmKundendatenndern.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent arg0) {
+										//TODO KundeEditDialog(oder so)
+									}
+								});
+								mnKunde.add(mntmKundendatenndern);
+							}
 							mnKunde.add(mntmNeuerKunde);
 						}
 						{
@@ -170,14 +171,7 @@ public class KundeDialog extends JDialog {
 						}
 					}
 				}
-			}
-
-			// Überschriften des Table
-			if (this.kunden != null) {
-				this.rows = kunden.size();
-				setTableEdit(rows, false);
-			}
-
+			}			
 		}
 
 	}
@@ -192,29 +186,17 @@ public class KundeDialog extends JDialog {
 	 *            Editierbar oder nicht
 	 * @return
 	 */
-	private void setTableEdit(int value, boolean editable) {
-		if (kunden == null) {
-			return;
-		}
-		TableModel model = null;
-		if (editable) {
-			model = new DefaultTableModel(value, 5) {
-				private static final long serialVersionUID = -8558421582956901665L;
-
-				public boolean isCellEditable(int row, int column) {
-					return true;
-				}
-			};
-		} else {
-			model = new DefaultTableModel(value, 5) {
+	private void updateTable() {
+		List<Kunde> kunden = db.getKunden();
+		
+		TableModel model =  new DefaultTableModel(kunden.size(), 5) {
 				private static final long serialVersionUID = -8558421582956901665L;
 
 				public boolean isCellEditable(int row, int column) {
 					return false;
 				}
 			};
-		}
-
+			
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JTableHeader th = table.getTableHeader();
@@ -248,8 +230,13 @@ public class KundeDialog extends JDialog {
 		table.setRowSorter(new TableRowSorter<TableModel>(model));
 	}
 
-	private int abfrageDialog(String str) {
-		return JOptionPane.showConfirmDialog(this, str);
+	/**
+	 * Diese Methode gibt die ID eines Selectierten Kunden zurück
+	 * @return
+	 */
+	public int getIdKunde(){
+		return this.idSelectedKunde;
 	}
+	
 
 }
