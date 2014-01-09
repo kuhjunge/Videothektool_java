@@ -27,6 +27,20 @@ public class FilmExemplar {
 	}
 	
 	/**
+	 * @return the idExemplar
+	 */
+	public int getIdExemplar() {
+		return idExemplar;
+	}
+
+	/**
+	 * @return the isVerliehen
+	 */
+	public boolean isVerliehen() {
+		return isVerliehen;
+	}
+
+	/**
 	 * Konstruktor
 	 * @param film_Ref
 	 * @param medium_Ref

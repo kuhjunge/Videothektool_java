@@ -434,4 +434,38 @@ public class DBController {
 		}
 	}
 	
+	/**
+	 * Gibt eine Liste von Film von Medium zurück, ob verliehen oder nicht
+	 * @param idFilm
+	 * @param idMedium
+	 * @param isVerliehen
+	 * @return
+	 */
+	public List<FilmExemplar> getExemplare(int idFilm, int idMedium, boolean isVerliehen){
+		List<FilmExemplar> exemplare = new LinkedList<FilmExemplar>();
+		try {
+			QueryBuilder<FilmExemplar, String> qb = bestandDao.queryBuilder();
+			qb.where().eq("film_Ref", idFilm)
+				.and().eq("medium_Ref", idMedium)
+				.and().eq("isVerliehen", isVerliehen);
+			
+			exemplare = bestandDao.query( qb.prepare() );
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		return exemplare;
+	}
+	
+	/**
+	 * Diese Methode löscht ein Filmexemplar
+	 * @param idExemplar
+	 */
+	public void deleteExemplar(int idExemplar){
+		try {
+			bestandDao.deleteById(String.valueOf(idExemplar));
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+	}
+	
 }
