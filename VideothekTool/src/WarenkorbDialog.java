@@ -1,12 +1,15 @@
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Point;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
@@ -39,6 +42,8 @@ import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
@@ -64,6 +69,7 @@ public class WarenkorbDialog extends JDialog {
 	private JTable table;
 	private JTextField textField;
 	private JButton button_1;
+	private JPopupMenu popupMenu;
 	
 	/**
 	 * Create the dialog.
@@ -130,7 +136,7 @@ public class WarenkorbDialog extends JDialog {
 						}						
 						int value = abfrageDialog("Wollen Sie diesen Warenkorb \nmit "+textField.getText()+" € verbuchen");
 						if(value == JOptionPane.YES_OPTION){
-							//verbuchen							
+							verbuchen();							
 							warenkorb.clear();
 							button_1.setText("kein Kunde ausgewählt");
 							idKunde = -1;
@@ -190,6 +196,34 @@ public class WarenkorbDialog extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		
+		table.addMouseListener(new MouseAdapter() {
+			/**
+			 * Aufruf des popupMenu
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupMenu.setVisible(true);
+				}
+			}
+
+			/**
+			 * Markiert die Zeile bei click einer Maustaste
+			 */
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// selects the row at which point the mouse is clicked
+				Point point = e.getPoint();
+				int currentRow = table.rowAtPoint(point);
+				if (currentRow >= 0 && currentRow <= table.getRowCount()) {
+					table.setRowSelectionInterval(currentRow, currentRow);					
+				}
+			}
+		});
+		
+		//füge popupMenu hinzu
+		addPopupMenu();		
 
 	}
 	
@@ -202,14 +236,14 @@ public class WarenkorbDialog extends JDialog {
 	 * 
 	 */
 	private void updateTable(int row) {		
-		TableModel model = new DefaultTableModel(row, 5) {
+		TableModel model = new DefaultTableModel(row, 4) {
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = -8558421582956901665L;
 
 			public boolean isCellEditable(int row, int column) {
-				if(column != 0 && column != 4 ){
+				if(column == 2){
 					return true;
 				}
 				else{
@@ -235,47 +269,31 @@ public class WarenkorbDialog extends JDialog {
 		//---
 		tc = tcm.getColumn(1);
 		tc.setHeaderValue("Medium");
-		tc.setPreferredWidth(60);
+		tc.setPreferredWidth(60);		
 		//---
 		tc = tcm.getColumn(2);
-		tc.setHeaderValue("Anzahl");
-		tc.setPreferredWidth(60);
-		//---
-		tc = tcm.getColumn(3);
 		tc.setHeaderValue("Zeitraum");
 		tc.setPreferredWidth(60);
 		//---
-		tc = tcm.getColumn(4);
+		tc = tcm.getColumn(3);
 		tc.setHeaderValue("Preis");
 		tc.setPreferredWidth(60);
 				
-		//Hinzufügen der FilmTitel		
+		//Hinzufügen der FilmTitel, Medium		
 		for(int i = 0; i < warenkorb.size(); i++){
-			String titel = db.getFilm(warenkorb.get(i)).getTitel();			
-			table.setValueAt(titel, i, 0);			
+			FilmExemplar exemplar = db.getExemplar(warenkorb.get(i));
+			
+			System.out.println(exemplar.getFilm_Ref());
+			String titel = db.getFilm( exemplar.getFilm_Ref() ).getTitel() + " - ID: "+exemplar.getIdExemplar();			
+			table.setValueAt(titel, i, 0);
+			String medium = db.getMedium( exemplar.getMedium_Ref() ).getNameMedium();
+			table.setValueAt(medium, i, 1);
 		}
 	
 		
-		//Hinzufügen von Componenten		
-		tc = tcm.getColumn(1);
-		JComboBox<String> comboBox = new JComboBox<String>();	
-	/*	List<String> medium = db.getMedium();
-		for(int i = 0; i < medium.size(); i++){
-			comboBox.addItem(medium.get(i));			
-		}		
-		tc.setCellEditor(new DefaultCellEditor(comboBox));
-		*/
-		//--
+		//Hinzufügen von Componenten
 		tc = tcm.getColumn(2);
-		comboBox = new JComboBox<String>();		
-		for(int a = 0; a <= 3; a++){
-			comboBox.addItem(a+"");
-		}		
-		tc.setCellEditor(new DefaultCellEditor(comboBox));
-		
-		//--
-		tc = tcm.getColumn(3);
-		comboBox = new JComboBox<String>();
+		JComboBox comboBox = new JComboBox<String>();
 		//Datum + 14Tage
 		Date date = new Date();
 		Calendar calendar = new GregorianCalendar();
@@ -305,24 +323,14 @@ public class WarenkorbDialog extends JDialog {
 	private void berechnePreis(int row){
 		if(warenkorb.isEmpty()){
 			return;
-		}/*
-		if(table.getValueAt(row, 1) != null && table.getValueAt(row, 2) != null && table.getValueAt(row, 3) != null){
-			//Medienzuschlag
-			double medium = db.getMediumZuschlag( (String) table.getValueAt(row, 1));
-
-			//Anzahl und Überprüfung, ob soviele möglich sind
-			int anzahl = Integer.valueOf( (String)table.getValueAt(row, 2) );
-						
-			if( (String) table.getValueAt(row, 1) == "DVD"){
-				if( db.getAnzahlDVD(warenkorb.get(row)) < anzahl ){
-					return;
-				}
-			}
-			else{
-				if( db.getAnzahlBluRay(warenkorb.get(row)) < anzahl ){
-					return;
-				}
-			}
+		}
+		if(table.getValueAt(row, 1) != null && table.getValueAt(row, 2) != null){			
+			FilmExemplar exemplar = db.getExemplar(warenkorb.get(row));
+			Film film = db.getFilm( exemplar.getFilm_Ref() );
+			Medium medium = db.getMedium(exemplar.getMedium_Ref());
+			
+			//Medienzuschlag			
+			double mediumZuschlag = medium.getMedienAufschlag();			
 			
 			//Tage
 			Calendar heute = new GregorianCalendar();
@@ -330,22 +338,22 @@ public class WarenkorbDialog extends JDialog {
 			DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 			Calendar ausleiheBis = new GregorianCalendar();
 			try {
-				ausleiheBis.setTime( df.parse( (String) table.getValueAt(row, 3)) );
+				ausleiheBis.setTime( df.parse( (String) table.getValueAt(row, 2)) );
 			} catch (ParseException e) {				
 				System.out.println(e.toString());
 			}	
 							
 			long diff = ausleiheBis.getTimeInMillis() - heute.getTimeInMillis();
 			int tage = (int)(diff / (1000*60*60*24)+1) ;			
-			//------------------
-			Film film = db.getFilm(warenkorb.get(row));
-			double value = film.getGrundPreis() * tage * anzahl + medium * tage * anzahl;
+
+			//------------------Berechnung---------------			
+			double value = film.getGrundPreis() * tage + mediumZuschlag * tage;
 			if( heute.before(film.getNeu_Bis())){
-				value += film.getNeuheiten_Zuschlag() * tage * anzahl;
+				value += film.getNeuheiten_Zuschlag() * tage;
 			}
 			
-			table.setValueAt(value, row, 4);			
-		}*/
+			table.setValueAt(value, row, 3);			
+		}
 	}
 
 	/**
@@ -357,8 +365,8 @@ public class WarenkorbDialog extends JDialog {
 		}
 		double preis = 0.0;
 		for(int i = 0; i < table.getRowCount(); i++){			
-			if(table.getValueAt(i, 4) != null){				
-				preis += (Double)table.getValueAt(i, 4);
+			if(table.getValueAt(i, 3) != null){				
+				preis += (Double)table.getValueAt(i, 3);
 			}
 		}
 		textField.setText(String.valueOf(preis));		
@@ -392,21 +400,62 @@ public class WarenkorbDialog extends JDialog {
 	}
 	
 	/**
-	 * Diese Methode fügt eine FilmId dem Warenkorb hinzu
+	 * Diese Methode fügt eine FilmExemplarId dem Warenkorb hinzu
 	 * @param idFilm
 	 */
-	public void addWarenkorbItem(int idFilm){
-		if(idFilm >= 0){
-			warenkorb.add(idFilm);
+	public void addWarenkorbItem(int idExemplar){
+		if(idExemplar >= 0){
+			warenkorb.add(idExemplar);
 		}
 	}
 	
 	/**
-	 * Gibt den Warenkorb zurück
+	 * Diese Methode überprüft, ob ein Element schon im Warenkorb ist
+	 * @param idExemplar
 	 * @return
 	 */
-	public List<Integer> getWarenkorb(){
-		return warenkorb;
+	public boolean isInWarenkorb(int idExemplar){
+		for(int i = 0; i < warenkorb.size(); i++){
+			if(warenkorb.get(i) == idExemplar){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Füge ein PopupMenu für den Table hinzu
+	 */
+	private void addPopupMenu(){
+		this.popupMenu = new JPopupMenu();
+		JMenuItem entry = new JMenuItem("aus Warenkorb entfernen");
+		entry.addActionListener(new ActionListener() {
+			/**
+			 * Ausgewähltes Exemplar zu Warenkorb hinzufügen
+			 */
+			public void actionPerformed(ActionEvent e) {
+				if(table.getSelectedRow() != -1){
+					String str = (String)table.getValueAt(table.getSelectedRow(), 0);
+					int value = abfrageDialog("Ausgewähltes Exemplar:\n "+str+"\naus Warenkorb entfernen?");
+					if(value == JOptionPane.YES_OPTION){
+						warenkorb.remove(table.getSelectedRow());
+						updateTable(warenkorb.size());
+						textField.setText("");
+					}
+				}
+				
+			}
+		});
+		
+		this.popupMenu.add(entry);
+		table.setComponentPopupMenu(popupMenu);
+	}
+	
+	/**
+	 * Diese Methode verbucht den Warenkorb
+	 */
+	private void verbuchen(){
+		
 	}
 	
 }

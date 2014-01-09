@@ -195,7 +195,7 @@ public class KundenDialog extends JDialog {
 		JTableHeader th = table.getTableHeader();
 		TableColumnModel tcm = th.getColumnModel();
 		TableColumn tc = tcm.getColumn(0);
-		tc.setHeaderValue("KundenID");
+		tc.setHeaderValue("ID");
 		tc.setPreferredWidth(60);
 		tc = tcm.getColumn(1);
 		tc.setHeaderValue("Name");

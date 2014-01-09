@@ -318,7 +318,7 @@ public class VideothekFrame extends JFrame {
 			 */
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.isPopupTrigger()) {					
+				if (e.isPopupTrigger()) {
 					popupMenu.setVisible(true);
 				}
 			}
@@ -370,9 +370,6 @@ public class VideothekFrame extends JFrame {
 				bestandDialog.setFilm(value);
 				bestandDialog.setLocationRelativeTo(getParent());
 				bestandDialog.setVisible(true);
-				if (bestandDialog.isChanged()) {
-					setTableValues();
-				}
 			}
 		});
 
@@ -390,25 +387,7 @@ public class VideothekFrame extends JFrame {
 				}
 			}
 		});
-		mntmInWarenkorb.addActionListener(new ActionListener() {
-			/**
-			 * Ausgewählten Film zu Warenkorb hinzufügen
-			 */
-			public void actionPerformed(ActionEvent e) {
-				int row = db.getFilm(
-						(String) table.getValueAt(table.getSelectedRow(), 0))
-						.getIdFilm();
-				// Überprüfen, ob schon in Warenkorb vorhanden
-				for (Integer value : warenkorbDialog.getWarenkorb()) {
-					if (row == value) {
-						return;
-					}
-				}
-				Film film = db.getFilm((String) table.getValueAt(
-						table.getSelectedRow(), 0));
-				warenkorbDialog.addWarenkorbItem(film.getIdFilm());
-			}
-		});
+
 		mntmFilmdetailsndern.setEnabled(false);
 		popupMenu.add(mntmFilmdetailsndern);
 
@@ -477,8 +456,10 @@ public class VideothekFrame extends JFrame {
 	 * 
 	 */
 	private void updateTable(int row) {
+		List<Medium> header = db.getMedium();
+
 		// Überschreiben des TableModels
-		TableModel model = new DefaultTableModel(row, 5) {
+		TableModel model = new DefaultTableModel(row, 1 + 2 * header.size()) {
 			/**
 			 * 
 			 */
@@ -492,8 +473,6 @@ public class VideothekFrame extends JFrame {
 
 		table.setModel(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		List<Medium> header = db.getMedium();
 
 		JTableHeader th = table.getTableHeader();
 		TableColumnModel tcm = th.getColumnModel();
@@ -545,17 +524,19 @@ public class VideothekFrame extends JFrame {
 
 		List<Film> filme = db.getFilme(textField.getText(), fsk);
 		updateTable(filme.size());
+		List<Medium> medium = db.getMedium();
 
 		for (int i = 0; i < filme.size(); i++) {
 			table.setValueAt(filme.get(i).getTitel(), i, 0);
-			/*table.setValueAt(db.getAnzahlDVD(filme.get(i).getIdFilm()), i, 3);
-			table.setValueAt(db.getAnzahlBluRay(filme.get(i).getIdFilm()), i, 4);
-			table.setValueAt(db.getAnzahlDVDPraesent(filme.get(i).getIdFilm()),
-					i, 1);
-			table.setValueAt(
-					db.getAnzahlBluRayPraesent(filme.get(i).getIdFilm()), i, 2);*/			
+			for (int a = 0; a < medium.size(); a++) {
+				table.setValueAt(db.getAnzahl(filme.get(i).getIdFilm(), medium
+						.get(a).getIdMedium()), i, 1 + a);
+			}
+			for (int a = 0; a < medium.size(); a++) {
+				table.setValueAt(db.getAnzahlPraesent(filme.get(i).getIdFilm(),
+						medium.get(a).getIdMedium()), i, 1 + medium.size() + a);
+			}
 		}
-		
 
 	}
 
@@ -577,12 +558,50 @@ public class VideothekFrame extends JFrame {
 	 */
 	private void setPopupMenuExemplare(int row) {
 		if (row != -1) {
-			JMenuItem test = new JMenuItem("Test");
-			this.mntmInWarenkorb.add(test);
-			
-			
+			this.mntmInWarenkorb.removeAll();
+
+			Film film = db.getFilm((String) table.getValueAt(
+					table.getSelectedRow(), 0));
+			List<Medium> medium = db.getMedium();
+
+			for (int i = 0; i < medium.size(); i++) {
+				JMenu mediumMenu = new JMenu(medium.get(i).getNameMedium());
+				List<FilmExemplar> exemplare = db.getExemplare(
+						film.getIdFilm(), medium.get(i).getIdMedium(), false);
+
+				for (int a = 0; a < exemplare.size(); a++) {
+					//Wenn Exemplar schon im Warenkorb ist, wird es nicht mehr angezeigt
+					if (!warenkorbDialog.isInWarenkorb(exemplare.get(a)
+							.getIdExemplar())) {
+						String str = film.getTitel() + " - ID: "
+								+ exemplare.get(a).getIdExemplar();
+						JMenuItem menuItem = new JMenuItem(str);
+						mediumMenu.add(menuItem);
+
+						// Hinzufügen eines ActionListener
+						menuItem.addActionListener(new ActionListener() {
+							/**
+							 * Ausgewähltes Exemplar zu Warenkorb hinzufügen
+							 */
+							public void actionPerformed(ActionEvent e) {
+
+								JMenuItem menuItem = (JMenuItem) e.getSource();
+								String s = menuItem.getText();
+								int i = s.lastIndexOf("- ID: ") + 6;
+								String str = s.substring(i);
+
+								warenkorbDialog.addWarenkorbItem(Integer
+										.parseInt(str));
+							}
+						});
+					}
+				}
+
+				this.mntmInWarenkorb.add(mediumMenu);
+			}
+
 		} else {
-			this.mntmWarenkorb = new JMenu("in Warenkorb");
+			this.mntmInWarenkorb.removeAll();
 		}
 	}
 

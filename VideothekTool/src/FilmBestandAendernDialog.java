@@ -33,10 +33,6 @@ public class FilmBestandAendernDialog extends JDialog {
 	private JTextField textField;
 
 	/**
-	 * die Variable wird true gesetzt, wenn sich Änderungen ergeben
-	 */
-	private boolean changed = false;
-	/**
 	 * DBController
 	 */
 	private DBController db;
@@ -57,7 +53,6 @@ public class FilmBestandAendernDialog extends JDialog {
 			 */
 			@Override
 			public void componentShown(ComponentEvent arg0) {
-				changed = false;
 				updateUI();
 			}
 
@@ -214,17 +209,7 @@ public class FilmBestandAendernDialog extends JDialog {
 		} catch (Exception e) {
 			System.out.println(e.toString()
 					+ " Fehler beim Schreiben der neuen Anzahl");
-		}
-		this.changed = true;
-	}
-
-	/**
-	 * Diese Methode gibt den Wert von changed zurück
-	 * 
-	 * @return
-	 */
-	public boolean isChanged() {
-		return changed;
+		}	
 	}
 
 	/**

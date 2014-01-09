@@ -277,6 +277,25 @@ public class DBController {
 			return null;
 		}		
 	}
+	
+	/**
+	 * Diese Methode gibt das Medium anhand seiner ID zurück
+	 * @param idMedium
+	 * @return
+	 */
+	public Medium getMedium(int idMedium){		
+		try {
+			QueryBuilder<Medium, String> qb = mediumDao.queryBuilder();
+			qb.where().eq("idMedium", idMedium);
+			
+			List<Medium> list = mediumDao.query(qb.prepare());
+			return list.get(0);
+
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return null;
+		}		
+	}
 		
 
 	/**
@@ -466,6 +485,25 @@ public class DBController {
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
+	}
+
+	/**
+	 * Diese Methode gibt ein FilmExemplar anhand seiner ID zurück
+	 * @param idExemplar
+	 * @return
+	 */
+	public FilmExemplar getExemplar(int idExemplar) {
+		List<FilmExemplar> list = new LinkedList<FilmExemplar>();
+		try {
+			QueryBuilder<FilmExemplar, String> qb = bestandDao.queryBuilder();
+			qb.where().eq("idExemplar", idExemplar);			
+			list = bestandDao.query(qb.prepare());
+			return list.get(0);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return null;
+		}
+		
 	}
 	
 }
