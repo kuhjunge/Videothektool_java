@@ -15,8 +15,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
 
 import javax.swing.SpinnerNumberModel;
+import javax.swing.JComboBox;
 
 
 public class FilmBestandAendernDialog extends JDialog {
@@ -41,9 +45,7 @@ public class FilmBestandAendernDialog extends JDialog {
 	 */
 	private int idFilm = -1;
 	private JSpinner spinner_1;
-	private JSpinner spinner_2;
-	private JLabel label_1;
-	private JLabel label_2;
+	private JComboBox comboBox;
 
 	/**
 	 * Create the dialog.
@@ -77,22 +79,13 @@ public class FilmBestandAendernDialog extends JDialog {
 			textField.setColumns(10);
 		}
 		{
-			label_1 = new JLabel("als DVD ()  ");
-			contentPanel.add(label_1);
+			comboBox = new JComboBox();
+			contentPanel.add(comboBox);
 		}
 		{
 			spinner_1 = new JSpinner();
 			spinner_1.setModel(new SpinnerNumberModel(0, 0, 99, 1));
 			contentPanel.add(spinner_1);
-		}
-		{
-			label_2 = new JLabel("als BluRay ()  ");
-			contentPanel.add(label_2);
-		}
-		{
-			spinner_2 = new JSpinner();
-			spinner_2.setModel(new SpinnerNumberModel(0, 0, 99, 1));
-			contentPanel.add(spinner_2);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -134,41 +127,94 @@ public class FilmBestandAendernDialog extends JDialog {
 		}
 	}
 
+	/**
+	 * Der Ausgewählte Film aus anderer Klasse heraus kann gesetzt werden
+	 * @param idFilm
+	 */
 	public void setFilm(int idFilm){
 		this.idFilm = idFilm;
 	}
 	
+	/**
+	 * Die UI wird aktualisiert
+	 */
 	private void updateUI(){
 		//alte Werte zurücksetzen
-		textField.setText("");
-		label_1.setText("  als DVD (0)  ");
-		label_2.setText("  als BluRay (0)  ");
+		textField.setText("");		
+		comboBox.removeAllItems();
 		//Werte neu setzen
-		 textField.setText( db.getFilm(idFilm).getTitel() );		
-		 int dvd = db.getAnzahlDVD(idFilm);
-		 int bluRay = db.getAnzahlBluRay(idFilm);
-		 spinner_1.setValue( dvd );
-		 spinner_2.setValue( bluRay );
-		 label_1.setText("  als DVD ("+dvd+")  ");
-		 label_2.setText(" als BluRay ("+bluRay+")  ");
+		 textField.setText( db.getFilm(idFilm).getTitel() );
+		 List<Medium> medium = db.getMedium();
+		 for(Medium str : db.getMedium()){
+			 comboBox.addItem(str.getNameMedium());
+		 }	 		 
+		 spinner_1.setValue( db.getAnzahlPraesent(idFilm, medium.get(0).getIdMedium()) );
+		 
+		 comboBox.addItemListener( new ItemListener(){
+			 /**
+			  * Aufruf, wenn Medium geändert wird
+			  * @param itemEvent
+			  */
+			 public void itemStateChanged(ItemEvent itemEvent) {
+				 if(itemEvent.getStateChange() == ItemEvent.SELECTED){
+					 String str = (String)itemEvent.getItem();
+					 spinner_1.setValue(db.getAnzahlPraesent(idFilm, db.getMedium(str).getIdMedium())) ;
+				 }
+			 }
+			 
+		 });
+		 
 	}
 	
-	private void writeValues(){
-		int dvd = (int)spinner_1.getValue();
-		int bluRay = (int)spinner_2.getValue();		
+	/**
+	 * Die Änderungen werden geschrieben
+	 */
+	private void writeValues(){		
+		Medium medium = db.getMedium( (String)comboBox.getSelectedItem() );				
 		try{
-			db.writeAnzahlDVD(dvd, idFilm);
-			db.writeAnzahlBluRay(bluRay, idFilm);
+			int value =  (int)spinner_1.getValue() - db.getAnzahl(idFilm, medium.getIdMedium()) ;
+			if( value > 0) {
+				for(int i = 0; i < value; i++){
+					db.addExemplar( medium.getIdMedium(), idFilm);
+				}
+			}
+			if(value < 0){
+				Object[] possibilities = {"ham", "spam", "yam"};				
+				/*String s = (String)JOptionPane.showInputDialog(	
+									this,
+				                    "Complete the sentence:\nGreen eggs and...\"",
+				                    "Customized Dialog",
+				                    JOptionPane.PLAIN_MESSAGE,
+				                    JOptionPane.QUESTION_MESSAGE,
+				                    possibilities,
+				                    "ham");*/
+				
+				
+				//If a string was returned, say so.
+				/*if ((s != null) && (s.length() > 0)) {
+				    setLabel("Green eggs and... " + s + "!");
+				    return;
+				}*/
+			}
 		}catch(Exception e){
-			System.out.println(e.toString()+" Fehler beim Schreiben der neuen Anzahl DVD");
+			System.out.println(e.toString()+" Fehler beim Schreiben der neuen Anzahl");
 		}
 		this.changed = true;
 	}
 	
+	/**
+	 * Diese Methode gibt den Wert von changed zurück
+	 * @return
+	 */
 	public boolean isChanged(){
 		return changed;
 	}
 	
+	/**
+	 * diese Methode öffnet einen FrageDialog
+	 * @param str
+	 * @return
+	 */
 	private int abfrageDialog(String str){		
 		return JOptionPane.showConfirmDialog(this, str);
 	}

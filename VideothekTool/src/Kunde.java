@@ -55,5 +55,8 @@ public class Kunde {
 	public String getEmail() {
 		return email;
 	}
+	public int getIdKunde(){
+		return this.idKunde;
+	}
 	
 }

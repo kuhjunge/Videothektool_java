@@ -5,6 +5,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
@@ -40,6 +41,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -61,6 +63,7 @@ public class WarenkorbDialog extends JDialog {
 	private int idKunde = -1;
 	private JTable table;
 	private JTextField textField;
+	private JButton button_1;
 	
 	/**
 	 * Create the dialog.
@@ -73,7 +76,8 @@ public class WarenkorbDialog extends JDialog {
 			@Override
 			public void componentShown(ComponentEvent arg0) {
 				//erstelle Table
-				updateTable(warenkorb.size());
+				updateTable(warenkorb.size());				
+				textField.setText("");
 			}
 		});
 		//Initialisierung der Variablen
@@ -88,7 +92,7 @@ public class WarenkorbDialog extends JDialog {
 		
 		setResizable(false);
 		setModal(true);
-		setBounds(100, 100, 600, 300);
+		setBounds(100, 100, 800, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -119,8 +123,27 @@ public class WarenkorbDialog extends JDialog {
 					/**
 					 * Buchen 
 					 */
-					public void actionPerformed(ActionEvent arg0) {						
-						dispose();
+					public void actionPerformed(ActionEvent arg0) {
+						String str = textField.getText();
+						if( str.isEmpty() || Double.parseDouble(str) == 0 || idKunde == -1){
+							return;
+						}						
+						int value = abfrageDialog("Wollen Sie diesen Warenkorb \nmit "+textField.getText()+" € verbuchen");
+						if(value == JOptionPane.YES_OPTION){
+							//verbuchen							
+							warenkorb.clear();
+							button_1.setText("kein Kunde ausgewählt");
+							idKunde = -1;
+							dispose();
+						}
+						else{
+							if(value == JOptionPane.CANCEL_OPTION){
+								warenkorb.clear();
+								button_1.setText("kein Kunde ausgewählt");
+								idKunde = -1;
+								dispose();
+							}
+						}						
 					}
 				});
 				buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
@@ -140,16 +163,16 @@ public class WarenkorbDialog extends JDialog {
 						textField.setColumns(10);
 					}
 					{
-						JButton btnKeinKundeGewhlt = new JButton("kein Kunde gew\u00E4hlt");
-						btnKeinKundeGewhlt.addActionListener(new ActionListener() {
+						button_1 = new JButton("kein Kunde gew\u00E4hlt");
+						button_1.addActionListener(new ActionListener() {
 							/**
 							 * Auswahl des Kunden
 							 */
 							public void actionPerformed(ActionEvent arg0) {
-								
+								auswahlKunde();
 							}
 						});
-						panel.add(btnKeinKundeGewhlt);
+						panel.add(button_1);
 					}
 				}
 				okButton.setActionCommand("OK");
@@ -157,7 +180,7 @@ public class WarenkorbDialog extends JDialog {
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
+				JButton cancelButton = new JButton("zur\u00FCck zur Auswahl");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
@@ -169,10 +192,7 @@ public class WarenkorbDialog extends JDialog {
 		}
 
 	}
-
-	public void setWarenkorb( List<Integer> warenkorb){
-		this.warenkorb = warenkorb;		
-	}
+	
 	
 	/**
 	 * Diese Methode fügt dem table row-Reihen hinzu und setzt die Überschrift
@@ -239,12 +259,12 @@ public class WarenkorbDialog extends JDialog {
 		//Hinzufügen von Componenten		
 		tc = tcm.getColumn(1);
 		JComboBox<String> comboBox = new JComboBox<String>();	
-		List<String> medium = db.getMediumArt();
+	/*	List<String> medium = db.getMedium();
 		for(int i = 0; i < medium.size(); i++){
 			comboBox.addItem(medium.get(i));			
 		}		
 		tc.setCellEditor(new DefaultCellEditor(comboBox));
-		
+		*/
 		//--
 		tc = tcm.getColumn(2);
 		comboBox = new JComboBox<String>();		
@@ -283,6 +303,9 @@ public class WarenkorbDialog extends JDialog {
 	 * @param row
 	 */
 	private void berechnePreis(int row){
+		if(warenkorb.isEmpty()){
+			return;
+		}/*
 		if(table.getValueAt(row, 1) != null && table.getValueAt(row, 2) != null && table.getValueAt(row, 3) != null){
 			//Medienzuschlag
 			double medium = db.getMediumZuschlag( (String) table.getValueAt(row, 1));
@@ -322,13 +345,16 @@ public class WarenkorbDialog extends JDialog {
 			}
 			
 			table.setValueAt(value, row, 4);			
-		}
+		}*/
 	}
 
 	/**
 	 * Diese Methode berechnet den Preis aller gewählten Filme
 	 */
 	private void berechneGesamtPreis() {
+		if(warenkorb.isEmpty()){
+			return;
+		}
 		double preis = 0.0;
 		for(int i = 0; i < table.getRowCount(); i++){			
 			if(table.getValueAt(i, 4) != null){				
@@ -336,6 +362,51 @@ public class WarenkorbDialog extends JDialog {
 			}
 		}
 		textField.setText(String.valueOf(preis));		
+	}
+	
+	/**
+	 * Diese Methode öffnet den KundenDialog und man kann dort einen Kunden auswählen
+	 */
+	private void auswahlKunde(){
+		KundenDialog dialog = new KundenDialog(db);
+		dialog.setModal(true);
+		dialog.setLocationRelativeTo(getParent());
+		dialog.setVisible(true);
+		this.idKunde = dialog.getIdKunde();
+		if(idKunde != -1){
+			Kunde kunde = db.getKunde(idKunde);
+			button_1.setText( kunde.getName()+", "+kunde.getVorname());
+		}
+		else{
+			button_1.setText("kein Kunde ausgewählt");
+		}
+	}
+	
+	/**
+	 * diese Methode öffnet einen FrageDialog
+	 * @param str
+	 * @return
+	 */
+	private int abfrageDialog(String str){		
+		return JOptionPane.showConfirmDialog(this, str);
+	}
+	
+	/**
+	 * Diese Methode fügt eine FilmId dem Warenkorb hinzu
+	 * @param idFilm
+	 */
+	public void addWarenkorbItem(int idFilm){
+		if(idFilm >= 0){
+			warenkorb.add(idFilm);
+		}
+	}
+	
+	/**
+	 * Gibt den Warenkorb zurück
+	 * @return
+	 */
+	public List<Integer> getWarenkorb(){
+		return warenkorb;
 	}
 	
 }
