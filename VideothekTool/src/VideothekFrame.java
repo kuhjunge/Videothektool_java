@@ -77,7 +77,7 @@ public class VideothekFrame extends JFrame {
 	/**
 	 * AddKundeDialog
 	 */
-	private AddKundeDialog addKundeDialog;
+	private KundeDialog addKundeDialog;
 	/**
 	 * WarenkorbDialog
 	 */
@@ -162,7 +162,7 @@ public class VideothekFrame extends JFrame {
 		this.addMovieDialog = new AddMovieDialog(this, db);
 		this.addMovieDialog.setModal(true);
 		
-		this.addKundeDialog = new AddKundeDialog(db);
+		this.addKundeDialog = new KundeDialog(db);
 		this.addKundeDialog.setModal(true);
 		
 		this.warenkorbDialog = new WarenkorbDialog(db);

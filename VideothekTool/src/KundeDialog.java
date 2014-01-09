@@ -38,7 +38,7 @@ import java.beans.PropertyChangeEvent;
 import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
 
-public class AddKundeDialog extends JDialog {
+public class KundeDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 
@@ -60,7 +60,7 @@ public class AddKundeDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AddKundeDialog(DBController db) {
+	public KundeDialog(DBController db) {
 		setModal(true);
 		setResizable(false);
 		setTitle("Kunden");
@@ -136,30 +136,38 @@ public class AddKundeDialog extends JDialog {
 					menuBar.add(mnKunde);
 					{
 						chckbxmntmEditierbar = new JCheckBoxMenuItem(
-								"Editierbar");
+								"Kundendaten \u00E4ndern");
 						chckbxmntmEditierbar
 								.addActionListener(new ActionListener() {
 									/**
-									 * Setzen, daﬂ Table editierbar ist
+									 * Aufruf Dialog, Kunde editierbar
 									 */
 									public void actionPerformed(ActionEvent e) {
-										if (chckbxmntmEditierbar.isSelected()) {
-											setTableEdit(rows, true);
-										} else {
-											setTableEdit(rows, false);
-										}
+										//TODO KundeEditDialog(oder so)
 									}
 								});
+						mnKunde.add(chckbxmntmEditierbar);
+						{
+							JSeparator separator = new JSeparator();
+							mnKunde.add(separator);
+						}
 						{
 							JMenuItem mntmNeuerKunde = new JMenuItem(
 									"Neuer Kunde");
+							mntmNeuerKunde.addActionListener(new ActionListener() {
+								/**
+								 * Aufruf neuer KundeDialog
+								 */
+								public void actionPerformed(ActionEvent arg0) {
+									//TODO neuer Kunde Dialog
+								}
+							});
 							mnKunde.add(mntmNeuerKunde);
 						}
 						{
 							JSeparator separator = new JSeparator();
 							mnKunde.add(separator);
 						}
-						mnKunde.add(chckbxmntmEditierbar);
 					}
 				}
 			}
