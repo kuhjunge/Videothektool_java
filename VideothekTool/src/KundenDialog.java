@@ -147,7 +147,7 @@ public class KundenDialog extends JDialog {
 								JMenuItem mntmKundendatenndern = new JMenuItem("Kundendaten \u00E4ndern");
 								mntmKundendatenndern.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent arg0) {
-										//TODO KundeEditDialog(oder so)
+										//TODO KundeEditDialog( und zusätzlich die Möglichkeit einen Kunden zulöschen
 									}
 								});
 								mnKunde.add(mntmKundendatenndern);

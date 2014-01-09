@@ -36,12 +36,19 @@ public class Rechnung {
 	 * Konstruktor
 	 * @param betrag
 	 * @param bezahl_Datum
-	 * @param kunde_Ref
+	 * @param kunde_Refs
 	 */
 	public Rechnung(double betrag, Date bezahl_Datum, int kunde_Ref){
 		this.betrag = betrag;
 		this.bezahl_Datum = bezahl_Datum;
 		this.kunde_Ref = kunde_Ref;
+	}
+
+	/**
+	 * @return the kunde_Ref
+	 */
+	public int getKunde_Ref() {
+		return kunde_Ref;
 	}
 
 	/**

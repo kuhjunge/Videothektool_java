@@ -53,6 +53,54 @@ public class Verliehen {
 		this.rechnung_Ref = rechnung_Ref;
 		this.medienExemplar_Ref = medienExemplar_Ref;
 	}
+
+
+	/**
+	 * @return the idVerliehen
+	 */
+	public int getIdVerliehen() {
+		return idVerliehen;
+	}
+
+
+	/**
+	 * @return the ausleihDatum
+	 */
+	public Date getAusleihDatum() {
+		return ausleihDatum;
+	}
+
+
+	/**
+	 * @return the leihFrist
+	 */
+	public Date getLeihFrist() {
+		return leihFrist;
+	}
+
+
+	/**
+	 * @return the medienExemplar_Ref
+	 */
+	public int getMedienExemplar_Ref() {
+		return medienExemplar_Ref;
+	}
+
+
+	/**
+	 * @param rueckgabeDatum the rueckgabeDatum to set
+	 */
+	public void setRueckgabeDatum(Date rueckgabeDatum) {
+		this.rueckgabeDatum = rueckgabeDatum;
+	}
+	
+	/**
+	 * @return the rechnung_Ref
+	 */
+	public int getRechnung_Ref() {
+		return rechnung_Ref;
+	}
+
 	
 	
 }

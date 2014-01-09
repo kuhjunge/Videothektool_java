@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Point;
 
 import javax.swing.JFrame;
@@ -17,7 +16,6 @@ import java.awt.Component;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -28,10 +26,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -42,7 +38,6 @@ import javax.swing.JScrollPane;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JDialog;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -87,6 +82,10 @@ public class VideothekFrame extends JFrame {
 	 */
 	private FilmBestandAendernDialog bestandDialog;
 	/**
+	 * FilmRueckgabeDialog
+	 */
+	private FilmRueckgabeDialog filmRueckgabeDialog;
+	/**
 	 * Die FilmDatenbank
 	 */
 	private DBController db;
@@ -113,8 +112,6 @@ public class VideothekFrame extends JFrame {
 	private JSeparator separator;
 	private JMenu mnFilmrckgabe;
 	private JMenuItem mntmFilmZurckgeben;
-	private JSeparator separator_2;
-	private JMenuItem mntmberflligeFilme;
 
 	/**
 	 * Launch the application.
@@ -173,6 +170,14 @@ public class VideothekFrame extends JFrame {
 		menuBar.add(mnDatei);
 
 		mntmNewMenuItem_6 = new JMenuItem("Ausloggen");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			/**
+			 * Ausloggen
+			 */			
+			public void actionPerformed(ActionEvent arg0) {
+				//TODO ausloggen implementieren
+			}
+		});
 		mnDatei.add(mntmNewMenuItem_6);
 
 		mntmBeenden = new JMenuItem("Beenden");
@@ -209,14 +214,17 @@ public class VideothekFrame extends JFrame {
 		mnFilmrckgabe = new JMenu("Filmr\u00FCckgabe");
 		menuBar.add(mnFilmrckgabe);
 
-		mntmFilmZurckgeben = new JMenuItem("Film zur\u00FCckgeben");
+		mntmFilmZurckgeben = new JMenuItem("Filmr\u00FCckgabe / \u00FCberf\u00E4llige Filme");
+		mntmFilmZurckgeben.addActionListener(new ActionListener() {
+			/**
+			 * Aufruf des FilmRueckgabeDialogs
+			 */
+			public void actionPerformed(ActionEvent e) {
+				filmRueckgabeDialog.setLocationRelativeTo(getParent());
+				filmRueckgabeDialog.setVisible(true);
+			}
+		});
 		mnFilmrckgabe.add(mntmFilmZurckgeben);
-
-		separator_2 = new JSeparator();
-		mnFilmrckgabe.add(separator_2);
-
-		mntmberflligeFilme = new JMenuItem("\u00DCberf\u00E4llige Filme");
-		mnFilmrckgabe.add(mntmberflligeFilme);
 
 		mnFilme = new JMenu("Filme");
 		mnFilme.setEnabled(false);
@@ -435,7 +443,7 @@ public class VideothekFrame extends JFrame {
 	 */
 	private void initialisiereDialoge() {
 		this.addMovieDialog = new AddMovieDialog(this, db);
-		this.addMovieDialog.setModal(true);
+		this.addMovieDialog.setModal(true); 
 
 		this.addKundeDialog = new KundenDialog(db);
 		this.addKundeDialog.setModal(true);
@@ -445,6 +453,9 @@ public class VideothekFrame extends JFrame {
 
 		this.bestandDialog = new FilmBestandAendernDialog(db, this);
 		this.bestandDialog.setModal(true);
+		
+		this.filmRueckgabeDialog = new FilmRueckgabeDialog(db, this);
+		this.filmRueckgabeDialog.setModal(true);
 
 	}
 
@@ -547,7 +558,7 @@ public class VideothekFrame extends JFrame {
 	 * @return
 	 */
 	private int abfrageDialog(String str) {
-		return JOptionPane.showConfirmDialog(this, str);
+		return JOptionPane.showConfirmDialog(this, str, "Frage", JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 
 	/**

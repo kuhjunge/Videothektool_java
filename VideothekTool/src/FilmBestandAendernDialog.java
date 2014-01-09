@@ -5,6 +5,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -48,6 +50,7 @@ public class FilmBestandAendernDialog extends JDialog {
 	private int idFilm = -1;
 	private JSpinner spinner_1;
 	private JComboBox comboBox;
+	private JLabel label_1;
 
 	/**
 	 * Create the dialog.
@@ -88,6 +91,10 @@ public class FilmBestandAendernDialog extends JDialog {
 			spinner_1 = new JSpinner();
 			spinner_1.setModel(new SpinnerNumberModel(0, 0, 99, 1));
 			contentPanel.add(spinner_1);
+		}
+		{
+			label_1 = new JLabel(" + 0 Exemplare");
+			contentPanel.add(label_1);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -169,6 +176,26 @@ public class FilmBestandAendernDialog extends JDialog {
 			}
 
 		});
+		
+		spinner_1.addChangeListener(new ChangeListener(){
+			 
+			/**
+			 * Label_1 wird aktualisiert, wenn sich im spinner_1 was ändert
+			 */
+			public void stateChanged(ChangeEvent ce) {
+				JSpinner spinner = (JSpinner) ce.getSource();
+				Medium medium = db.getMedium( (String)comboBox.getSelectedItem());
+				int old_value = db.getAnzahlPraesent(idFilm, medium.getIdMedium());
+				int new_value = (int) spinner.getValue();
+				
+				if( new_value - old_value >= 0){
+					label_1.setText( " + "+ (new_value - old_value)+" Exemplare");
+				}
+				else{
+					label_1.setText( " - "+ (old_value - new_value)+" Exemplare");
+				}
+			}
+		});
 
 	}
 
@@ -179,11 +206,13 @@ public class FilmBestandAendernDialog extends JDialog {
 		Medium medium = db.getMedium((String) comboBox.getSelectedItem());
 		try {
 			int value = (int) spinner_1.getValue()
-					- db.getAnzahl(idFilm, medium.getIdMedium());
+					- db.getAnzahlPraesent(idFilm, medium.getIdMedium());
 			if (value > 0) {
 				for (int i = 0; i < value; i++) {
 					db.addExemplar(idFilm, medium.getIdMedium());
 				}
+				//Aktualisiere den Table aus VideothekFrame
+				topFrame.setTableValues();
 			}
 			if (value < 0) {
 				//Lösche solange, bis Differenz == 0;
@@ -228,7 +257,7 @@ public class FilmBestandAendernDialog extends JDialog {
 	 * @return
 	 */
 	private int abfrageDialog(String str) {
-		return JOptionPane.showConfirmDialog(this, str);
+		return JOptionPane.showConfirmDialog(this, str, "Frage", JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 
 }

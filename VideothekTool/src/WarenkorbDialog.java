@@ -262,9 +262,8 @@ public class WarenkorbDialog extends JDialog {
 				
 		//Hinzufügen der FilmTitel, Medium		
 		for(int i = 0; i < warenkorb.size(); i++){
-			FilmExemplar exemplar = db.getExemplar(warenkorb.get(i));
+			FilmExemplar exemplar = db.getExemplar(warenkorb.get(i));			
 			
-			System.out.println(exemplar.getFilm_Ref());
 			String titel = db.getFilm( exemplar.getFilm_Ref() ).getTitel() + " - ID: "+exemplar.getIdExemplar();			
 			table.setValueAt(titel, i, 0);
 			String medium = db.getMedium( exemplar.getMedium_Ref() ).getNameMedium();
@@ -377,7 +376,7 @@ public class WarenkorbDialog extends JDialog {
 	 * @return
 	 */
 	private int abfrageDialog(String str){		
-		return JOptionPane.showConfirmDialog(this, str);
+		return JOptionPane.showConfirmDialog(this, str, "Frage", JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 	
 	/**
@@ -438,11 +437,19 @@ public class WarenkorbDialog extends JDialog {
 	 */
 	private void verbuchen() {
 		if(warenkorb.size() != 0){
+			//Warenkorb korrigieren
+			for(int i = 0; i < table.getRowCount(); i++){
+				double str = (Double) table.getValueAt(i, 3);
+				if( str == 0.0 ){
+					warenkorb.remove(i);
+				}
+			}
+			
+			//warenkorb verbuchen
 			for(int i = 0; i < warenkorb.size(); i++){
 				double betrag = Double.parseDouble( textField.getText() );
 				//schreibe Rechnung				
-				int idRechnung = db.writeRechnung(idKunde, betrag);		
-				System.out.println(idKunde+ " mit Betrag ="+betrag +" und idRechnung "+idRechnung);
+				int idRechnung = db.writeRechnung(idKunde, betrag);				
 				
 				//Zeitumrechnung von Date zu java.sql.Date
 				String str = (String) table.getValueAt(i, 2);
@@ -458,7 +465,7 @@ public class WarenkorbDialog extends JDialog {
 				String str2 = df_sql.format(date);
 				java.sql.Date date_sql = java.sql.Date.valueOf(str2);			
 				
-				//schreibe die einzelnen Posten der Rechnung
+				//schreibe die einzelnen Posten der Rechnung			
 				db.writeVerliehen((int)warenkorb.get(i), date_sql, idRechnung);
 			}
 		}

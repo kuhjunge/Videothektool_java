@@ -514,8 +514,7 @@ public class DBController {
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			return null;
-		}
-		
+		}		
 	}
 	
 	/**
@@ -572,6 +571,109 @@ public class DBController {
 			System.out.println(e.toString()+"Fehler beim Schreiben der Rechnung");
 			return -1;
 		}
+	}
+	
+	/**
+	 * Diese Methode gibt alle Exemplare zurück, 
+	 * die entweder verliehen oder nicht sind
+	 * @param isVerliehen
+	 * @return
+	 */
+	public List<FilmExemplar> getExemplar(boolean isVerliehen){		
+		List<FilmExemplar> exemplare = new LinkedList<FilmExemplar>();		 
+		try {
+			QueryBuilder<FilmExemplar, String> qb = bestandDao.queryBuilder();
+			qb.where().eq("isVerliehen", isVerliehen);			
+			exemplare = bestandDao.query(qb.prepare());
+			return exemplare;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return null;
+		}
+	}
+	
+	/**
+	 * Diese Methode gibt alle Verliehen-Datensätze zurück, die noch kein RückgabeDatum haben
+	 * @return
+	 */
+	public List<Verliehen> getVerliehen(){
+		List<Verliehen> list = new LinkedList<Verliehen>();		 
+		try {
+			QueryBuilder<Verliehen, String> qb = verliehenDao.queryBuilder();
+			qb.where().isNull("rueckgabeDatum");			
+			list = verliehenDao.query(qb.prepare());
+			return list;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return null;
+		}
+	}
+	
+	/**
+	 * Diese Methode gibt den zu einer Rechnung gehörende KundenID zurück
+	 * @param idRechnung
+	 * @return
+	 */
+	public int getKundeRechnung(int idRechnung){
+		int value = -1;
+		try{
+			Rechnung rechnung = rechnungDao.queryForId(String.valueOf(idRechnung));						
+			value = rechnung.getKunde_Ref();			
+		}catch(Exception e){
+			System.out.println(e.toString());			
+		}
+		return value;
+	}
+	
+	/**
+	 * Diese Methode setzt das RueckgabeDatum eines Verliehen-Obj 
+	 * @param idVerliehen
+	 * @param rueckgabeDate
+	 */
+	public void updateVerliehen(int idVerliehen, java.sql.Date rueckgabeDate){
+		try{
+			Verliehen verliehen = verliehenDao.queryForId(String.valueOf(idVerliehen));
+			verliehen.setRueckgabeDatum(rueckgabeDate);
+			verliehenDao.update(verliehen);
+		}catch(Exception e){
+			System.out.println(e.toString());			
+		}		
+	}
+	
+	/**
+	 * Diese Methode setzt den isVerliehenFlag von FilmExemplar auf false
+	 * @param idExemplar
+	 */
+	public void updateExemplar(int idExemplar){
+		try{
+			FilmExemplar exemplar = bestandDao.queryForId(String.valueOf(idExemplar));
+			exemplar.setVerliehen(false);
+			bestandDao.update(exemplar);
+		}catch(Exception e){
+			System.out.println(e.toString());			
+		}	
+	}
+	
+	
+	/**
+	 * Diese Methode gibt ein Verliehen-Obj zurück,
+	 * das sich durch Suche von offenem Rueckgabedatum 
+	 * und idFilmExemplar ergibt
+	 * @param idExemplar
+	 * @return
+	 */
+	public Verliehen getVerliehen(int idExemplar){
+		try{			
+			QueryBuilder<Verliehen, String> qb = verliehenDao.queryBuilder();
+			qb.where().isNull("rueckgabeDatum")
+				.and().eq("medienExemplar_Ref", idExemplar);
+			
+			List<Verliehen> list = verliehenDao.query(qb.prepare());
+			return list.get(0);
+		}catch(Exception e){
+			System.out.println(e.toString());
+			return null;
+		}	
 	}
 	
 }
