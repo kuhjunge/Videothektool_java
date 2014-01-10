@@ -26,6 +26,7 @@ public class LoginScreen extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -3885239109790662200L;
+	public  static boolean login = false; //ToDo: Getter
 	private JPanel contentPane;
 	private JTextField textFieldNutzername; // Nutzername
 	private JPasswordField textFieldPasswort; // pw
@@ -46,6 +47,7 @@ public class LoginScreen extends JFrame {
 	 * Create the frame.
 	 */
 	public LoginScreen() {
+		login = false;
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 315, 223);
@@ -119,6 +121,7 @@ public class LoginScreen extends JFrame {
 					db = new DBController();
 					db.connect();
 					SaveLoader.saveToXML();
+					login = true;
 					dispose();
 				} catch (SQLException e) {
 					JOptionPane.showMessageDialog(

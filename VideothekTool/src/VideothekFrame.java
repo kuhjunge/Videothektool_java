@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JTextField;
 
@@ -166,6 +167,9 @@ public class VideothekFrame extends JFrame {
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
+		// ToDo: Implementierung eines Hilfe Fensters in welcher die Bedienung
+		// des Programmes kurz erläutert wird.
+
 		mnDatei = new JMenu("Datei");
 		menuBar.add(mnDatei);
 
@@ -173,9 +177,50 @@ public class VideothekFrame extends JFrame {
 		mntmNewMenuItem_6.addActionListener(new ActionListener() {
 			/**
 			 * Ausloggen
-			 */			
+			 */
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO ausloggen implementieren
+				// TODO ausloggen besser implementieren (Diese Implementierung
+				// ist Suboptimal, u.a. ist nicht sichergestellt, dass keine
+				// Nutzerdaten mehr angezeigt werden vom vorherigen Nutzer)
+				db.close();
+				db = null;
+				LoginScreen wle = new LoginScreen();
+				wle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				wle.setLocationRelativeTo(null);// positioniert in
+												// Bildschirmmitte
+				wle.setVisible(true);
+				wle.addWindowListener(new WindowListener() {
+					public void windowClosed(WindowEvent arg0) {
+						if (LoginScreen.login == false)
+						{
+							System.exit(0);
+						}
+					}
+
+					public void windowActivated(WindowEvent arg0) {
+						System.out.println("Window Activated");
+					}
+
+					public void windowClosing(WindowEvent arg0) {
+						System.out.println("Window Closing");
+					}
+
+					public void windowDeactivated(WindowEvent arg0) {
+						System.out.println("Window Deactivated");
+					}
+
+					public void windowDeiconified(WindowEvent arg0) {
+						System.out.println("Window Deiconified");
+					}
+
+					public void windowIconified(WindowEvent arg0) {
+						System.out.println("Window Iconified");
+					}
+
+					public void windowOpened(WindowEvent arg0) {
+						System.out.println("Window Opened");
+					}
+				});
 			}
 		});
 		mnDatei.add(mntmNewMenuItem_6);
@@ -214,7 +259,8 @@ public class VideothekFrame extends JFrame {
 		mnFilmrckgabe = new JMenu("Filmr\u00FCckgabe");
 		menuBar.add(mnFilmrckgabe);
 
-		mntmFilmZurckgeben = new JMenuItem("Filmr\u00FCckgabe / \u00FCberf\u00E4llige Filme");
+		mntmFilmZurckgeben = new JMenuItem(
+				"Filmr\u00FCckgabe / \u00FCberf\u00E4llige Filme");
 		mntmFilmZurckgeben.addActionListener(new ActionListener() {
 			/**
 			 * Aufruf des FilmRueckgabeDialogs
@@ -366,12 +412,11 @@ public class VideothekFrame extends JFrame {
 			 * Aufruf des ReservierenDialog
 			 */
 			public void actionPerformed(ActionEvent e) {
-				//TODO ReservierenDialog einfügen						
+				// TODO ReservierenDialog einfügen
 			}
 		});
 
 		popupMenu.add(mntmReservieren);
-		
 
 		mntmFilmbestandndern_1 = new JMenuItem("Filmbestand \u00E4ndern");
 		mntmFilmbestandndern_1.setEnabled(false);
@@ -387,7 +432,7 @@ public class VideothekFrame extends JFrame {
 						.getIdFilm();
 				bestandDialog.setFilm(value);
 				bestandDialog.setLocationRelativeTo(getParent());
-				bestandDialog.setVisible(true);						
+				bestandDialog.setVisible(true);
 			}
 		});
 
@@ -453,7 +498,7 @@ public class VideothekFrame extends JFrame {
 	 */
 	private void initialisiereDialoge() {
 		this.addMovieDialog = new AddMovieDialog(this, db);
-		this.addMovieDialog.setModal(true); 
+		this.addMovieDialog.setModal(true);
 
 		this.addKundeDialog = new KundenDialog(db);
 		this.addKundeDialog.setModal(true);
@@ -463,7 +508,7 @@ public class VideothekFrame extends JFrame {
 
 		this.bestandDialog = new FilmBestandAendernDialog(db, this);
 		this.bestandDialog.setModal(true);
-		
+
 		this.filmRueckgabeDialog = new FilmRueckgabeDialog(db, this);
 		this.filmRueckgabeDialog.setModal(true);
 
@@ -550,12 +595,12 @@ public class VideothekFrame extends JFrame {
 		for (int i = 0; i < filme.size(); i++) {
 			table.setValueAt(filme.get(i).getTitel(), i, 0);
 			for (int a = 0; a < medium.size(); a++) {
-				table.setValueAt(db.getAnzahlPraesent(filme.get(i).getIdFilm(), medium
-						.get(a).getIdMedium()), i, 1 + a);
+				table.setValueAt(db.getAnzahlPraesent(filme.get(i).getIdFilm(),
+						medium.get(a).getIdMedium()), i, 1 + a);
 			}
 			for (int a = 0; a < medium.size(); a++) {
-				table.setValueAt(db.getAnzahl(filme.get(i).getIdFilm(),
-						medium.get(a).getIdMedium()), i, 1 + medium.size() + a);
+				table.setValueAt(db.getAnzahl(filme.get(i).getIdFilm(), medium
+						.get(a).getIdMedium()), i, 1 + medium.size() + a);
 			}
 		}
 
@@ -568,7 +613,8 @@ public class VideothekFrame extends JFrame {
 	 * @return
 	 */
 	private int abfrageDialog(String str) {
-		return JOptionPane.showConfirmDialog(this, str, "Frage", JOptionPane.YES_NO_CANCEL_OPTION);
+		return JOptionPane.showConfirmDialog(this, str, "Frage",
+				JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 
 	/**
@@ -591,7 +637,8 @@ public class VideothekFrame extends JFrame {
 						film.getIdFilm(), medium.get(i).getIdMedium(), false);
 
 				for (int a = 0; a < exemplare.size(); a++) {
-					//Wenn Exemplar schon im Warenkorb ist, wird es nicht mehr angezeigt
+					// Wenn Exemplar schon im Warenkorb ist, wird es nicht mehr
+					// angezeigt
 					if (!warenkorbDialog.isInWarenkorb(exemplare.get(a)
 							.getIdExemplar())) {
 						String str = film.getTitel() + " - ID: "

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
@@ -109,7 +108,7 @@ public class AddMovieDialog extends JDialog {
 		{
 
 			btnFilmHinzufgen.addActionListener(new ActionListener() {
-				@SuppressWarnings("deprecation")
+				//@SuppressWarnings("deprecation")
 				public void actionPerformed(ActionEvent e) {
 					try {
 						int genreid = 1;

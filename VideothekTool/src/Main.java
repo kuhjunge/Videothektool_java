@@ -31,7 +31,10 @@ public class Main extends JFrame {
 		wle.addWindowListener(new WindowListener() {
 			public void windowClosed(WindowEvent arg0) {
 				System.out.println("Window close event occur");
-				
+				if (LoginScreen.login == false)
+				{
+					System.exit(0);
+				}
 				VideothekFrame video = new VideothekFrame();
 				video.setLocationRelativeTo(null);
 				video.setVisible(true);
@@ -61,5 +64,6 @@ public class Main extends JFrame {
 				System.out.println("Window Opened");
 			}
 		});
+		
 	}
 }
