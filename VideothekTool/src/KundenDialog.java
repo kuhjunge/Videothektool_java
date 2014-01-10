@@ -6,8 +6,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -21,26 +19,17 @@ import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
-import javax.swing.JCheckBox;
-
-import java.awt.GridLayout;
-
-import javax.swing.CellEditor;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class KundenDialog extends JDialog {
+
+	private static final long serialVersionUID = -8336112996804972251L;
 
 	private final JPanel contentPanel = new JPanel();
 
