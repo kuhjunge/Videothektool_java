@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JMenuBar;
@@ -36,6 +37,7 @@ public class KundenDialog extends JDialog {
 	private DBController db;
 	private JTable table;
 	private JScrollPane scrollPane;
+	private KundeEditDialog kundeEditDialog;
 	
 	/**
 	 * Zur Auswahl einer KundenID für den Warenkobr
@@ -46,6 +48,7 @@ public class KundenDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public KundenDialog(DBController db) {
+		kundeEditDialog = new KundeEditDialog(this, db);
 		addComponentListener(new ComponentAdapter() {
 			/**
 			 * Aufruf des Dialogs
@@ -129,14 +132,21 @@ public class KundenDialog extends JDialog {
 								 * Aufruf neuer KundeDialog
 								 */
 								public void actionPerformed(ActionEvent arg0) {
-									//TODO neuer Kunde Dialog
+									kundeEditDialog.setLocationRelativeTo(getParent());
+									kundeEditDialog.clear();
+									kundeEditDialog.setVisible(true);
+
 								}
 							});
 							{
 								JMenuItem mntmKundendatenndern = new JMenuItem("Kundendaten \u00E4ndern");
 								mntmKundendatenndern.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent arg0) {
-										//TODO KundeEditDialog( und zusätzlich die Möglichkeit einen Kunden zulöschen
+										kundeEditDialog.setLocationRelativeTo(getParent());
+										kundeEditDialog.clear();
+										// kundeEditDialog.setKunden(kunde); TODO: Kundenparameter übergeben
+										kundeEditDialog.setVisible(true);
+
 									}
 								});
 								mnKunde.add(mntmKundendatenndern);

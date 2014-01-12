@@ -134,14 +134,6 @@ public class DBController {
 		this.filmDao.isTableExists(); // Erzeugt Fehler bei fehlerhafter
 										// Verbindung
 		globalright = checkright();
-		if (globalright < 3) {
-			// Wenn admin
-		} else if (globalright < 2) {
-			// Wenn Viewuser (mit schreibrechten)
-		} else {
-			// alles andere TODO: Schreibrechte für View richtig abprüfen
-		}
-
 	}
 
 	/**
@@ -150,8 +142,6 @@ public class DBController {
 	 * @return 1 für Mitarbeiter, 2 für Filialleitung, 0 bei Zugriffsfehler
 	 */
 	public int checkright() {
-		// TODO Überarbeiten. Der Dao istfür alle Zugänglich und a
-
 		int recht = 2;
 		try {
 			QueryBuilder<Film, String> queryBuilder = filmDao.queryBuilder();
