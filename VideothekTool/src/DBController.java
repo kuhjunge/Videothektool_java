@@ -147,30 +147,22 @@ public class DBController {
 	/**
 	 * Methode überprüft, ob Filialleiter-Rechte vorhanden sind
 	 * 
-	 * @return 1 für Mitarbeiter, 2 für Filialleitung
+	 * @return 1 für Mitarbeiter, 2 für Filialleitung, 0 bei Zugriffsfehler
 	 */
 	public int checkright() {
-		// TODO Experimentelle Funktion, bitte ausgiebig testen (Bugs an Chris
-		// melden)
+		// TODO Überarbeiten. Der Dao istfür alle Zugänglich und a
 
 		int recht = 2;
 		try {
-			if (this.genreDao.queryForAll() != null) {
-				System.out.println("Adminrechte");
-			}
-		} catch (MySQLSyntaxErrorException e) { // User ist Viewuser recht = 2;
-			System.out.println("Viewuster erkannt");
-			try {
-				this.filmDao = DaoManager.createDao(this.connectionSource,
-						Film.class);
-				if (!this.filmDao.isUpdatable()) {
-					System.out.println("keine schreibrechte");
-					recht = 1;
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			QueryBuilder<Film, String> queryBuilder = filmDao.queryBuilder();
+			queryBuilder.limit(1);
+			PreparedQuery<Film> preparedQuery = queryBuilder.prepare();
+			List<Film> filmList = filmDao.query(preparedQuery);
+			this.filmDao.update(filmList.remove(0));
 		} catch (SQLException e) {
+			recht =1;
+		}
+		catch (Exception e) {
 			recht = 0;
 		} // return recht;
 

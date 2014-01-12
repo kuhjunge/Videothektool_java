@@ -345,6 +345,7 @@ public class VideothekFrame extends JFrame {
 					mnFilme.setEnabled(true);
 					mntmFilmbestandndern_1.setEnabled(true);
 					mntmFilmdetailsndern.setEnabled(true);
+					
 				} else {
 					mnFilme.setEnabled(false);
 					mntmFilmbestandndern_1.setEnabled(false);
