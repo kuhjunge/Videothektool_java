@@ -25,6 +25,8 @@ public class Kunde {
 	@DatabaseField
 	private String email;
 	
+	//TODO Kundenadresse einfügen?
+	
 	/**
 	 * Default-Konstruktor
 	 */

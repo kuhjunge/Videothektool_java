@@ -21,8 +21,11 @@ import javax.swing.JComboBox;
  */
 public class KundeEditDialog extends JDialog {
 	private static final long serialVersionUID = 4482694704840588709L;
-	private JPanel contentPanel = new JPanel();
 	private DBController db;
+	private JTextField textFieldName;
+	private JTextField textFieldGeb;
+	private JTextField textFieldTele;
+	private JTextField textFieldMail;
 
 	/**
 	 * Setzt eine Kundenauswahl in das Fenster!
@@ -59,17 +62,49 @@ public class KundeEditDialog extends JDialog {
 		if (!db.isDBOnline()) {
 			dispose();
 		}
-		setBounds(100, 100, 450, 259);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
+		setBounds(100, 100, 250, 184);
+		getContentPane().setLayout(null);
 		
-		JButton btnNewButton = new JButton("New button");
-		btnNewButton.setBounds(98, 177, 89, 23);
-		getContentPane().add(btnNewButton);
+		JLabel lblKundenID = new JLabel("KundenID:");
+		lblKundenID.setBounds(10, 11, 224, 14);
+		getContentPane().add(lblKundenID);
+		
+		JLabel lblName = new JLabel("Name:");
+		lblName.setBounds(10, 36, 88, 14);
+		getContentPane().add(lblName);
+		
+		JLabel lblGeburtstag = new JLabel("Geburtstag:");
+		lblGeburtstag.setBounds(10, 61, 88, 14);
+		getContentPane().add(lblGeburtstag);
+		
+		JLabel lblTelefon = new JLabel("Telefonnummer:");
+		lblTelefon.setBounds(10, 86, 88, 14);
+		getContentPane().add(lblTelefon);
+		
+		JLabel lblEMail = new JLabel("E-Mail");
+		lblEMail.setBounds(10, 111, 88, 14);
+		getContentPane().add(lblEMail);
+		
+		textFieldName = new JTextField();
+		textFieldName.setBounds(100, 33, 134, 20);
+		getContentPane().add(textFieldName);
+		textFieldName.setColumns(10);
+		
+		textFieldGeb = new JTextField();
+		textFieldGeb.setBounds(100, 58, 134, 20);
+		getContentPane().add(textFieldGeb);
+		textFieldGeb.setColumns(10);
+		
+		textFieldTele = new JTextField();
+		textFieldTele.setBounds(100, 83, 134, 20);
+		getContentPane().add(textFieldTele);
+		textFieldTele.setColumns(10);
+		
+		textFieldMail = new JTextField();
+		textFieldMail.setBounds(100, 108, 134, 20);
+		getContentPane().add(textFieldMail);
+		textFieldMail.setColumns(10);
 
 		// TODO: Kunde Edit Formular erstellen
 	}
-	// TODO: Kunde löschen / speichern Funktion 
 }
