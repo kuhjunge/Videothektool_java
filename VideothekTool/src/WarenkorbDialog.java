@@ -107,6 +107,7 @@ public class WarenkorbDialog extends JDialog {
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
 				table = new JTable();
+				table.setToolTipText("Rechtsclick f\u00FCr PopupMen\u00FC");
 				table.addPropertyChangeListener(new PropertyChangeListener() {
 					public void propertyChange(PropertyChangeEvent arg0) {
 						if(table.getSelectedRow() != -1){						

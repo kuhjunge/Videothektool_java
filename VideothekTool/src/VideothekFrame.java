@@ -367,6 +367,7 @@ public class VideothekFrame extends JFrame {
 		panel_2.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
+		table.setToolTipText("Rechtsclick f\u00FCr PopupMen\u00FC");
 		table.addMouseListener(new MouseAdapter() {
 			/**
 			 * Aufruf des popupMenu
