@@ -13,6 +13,7 @@ import com.j256.ormlite.dao.*;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.support.ConnectionSource;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 
@@ -240,15 +241,20 @@ public class DBController {
 	 *            zu suchender Film
 	 * @param idMedium
 	 *            die MediumsArt
-	 * @return Rückgabe der Anzahl der Filme als DVD
+	 * @return Rückgabe der Anzahl der Filme als Medium
 	 */
 	public int getAnzahl(int idFilm, int idMedium) {
 		int value = 0;
-		try {
+		try {/*
 			QueryBuilder<FilmExemplar, String> qb = bestandDao.queryBuilder();
 			qb.where().eq("film_Ref", idFilm).and().eq("medium_Ref", idMedium);
 			List<FilmExemplar> exemplare = bestandDao.query(qb.prepare());
 			value = exemplare.size();
+			*/
+			// Aufruf einer Stored Function
+			String str = "select getAnzahl("+idFilm+","+idMedium+")";			
+			value = (int) bestandDao.queryRawValue(str);			
+			
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
