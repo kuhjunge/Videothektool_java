@@ -37,12 +37,6 @@ public class LoginScreen extends JFrame {
 	private JLabel lblDatenbankname;
 	private JCheckBox chckbxLogindatenSpeichern; // Checkbox
 
-	/*
-	 * public static void openLoginScreen(String[] args) {
-	 * EventQueue.invokeLater(new Runnable() { public void run() { try {
-	 * LoginScreen frame = new LoginScreen(); frame.setVisible(true); } catch
-	 * (Exception e) { e.printStackTrace(); } } }); }
-	 */
 	/**
 	 * Create the frame.
 	 */
